@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
+from textwrap import wrap
 from timesheet_types import *
 from timesheet_parser import parse
 from timesheet_printer import \
@@ -10,7 +11,12 @@ if __name__ == "__main__":
     try:
         log: Log = parse(sys.stdin.read())
     except ParseError as e:
-        print(e, file=sys.stderr, end="")
+        print(
+            '\n'.join(wrap(f'Error while parsing line {e.line+1}: {e}')),
+            file=sys.stderr
+        )
+        if e.context != None:
+            print(e.context, file=sys.stderr, end="")
         exit(1)
     if sys.argv[1] == "sum":
         print(print_sum(log))
