@@ -61,7 +61,7 @@ class Day:
 
 class Log:
     def __init__(self):
-        self.tasks: dict[str,Task] = dict()
+        self.taskdefs: dict[str,Task] = dict()
         self.defaults: dict[str,str] = dict()
         self.days: list[Day] = list()
     def set_default(self, key, val):
@@ -74,12 +74,12 @@ class Log:
     def get_default(self, key: str) -> str:
         return self.defaults.get(key)
     def add_task(self, task: Task):
-        if task.name in self.tasks.keys():
+        if task.name in self.taskdefs.keys():
             raise ParseError(0, f"Task '{task.name}' was already defined")
-        self.tasks[task.name] = task
+        self.taskdefs[task.name] = task
     def get_task(self, name: str):
-        if name not in self.tasks.keys():
+        if name not in self.taskdefs.keys():
             raise ParseError(0, f"Task '{name}' referenced before asignment")
-        return self.tasks.get(name)
+        return self.taskdefs.get(name)
     def add_day(self, day: Day):
         self.days.append(day)
