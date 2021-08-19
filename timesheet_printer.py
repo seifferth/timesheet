@@ -71,3 +71,20 @@ def print_hours_only_novat(log: Log) -> str:
     total_price = total_price if total_price else ""
     lines.append(f'Total,,,{total_hours},{total_price}')
     return '\n'.join(lines)
+
+def print_custom(log: Log, format: str) -> str:
+    lines = list()
+    for d in log.days:
+        for task, time in d.times.items():
+            linedict = {
+                'date': d.date,
+                'task': task.name,
+                'time': time/60,
+                'desc': task.desc,
+                'rate': task.rate,
+                'vat':  task.vat,
+            }
+            for k, v in linedict.items():
+                if v == None: linedict[k] = ""
+            lines.append(format.format(**linedict))
+    return '\n'.join(lines)

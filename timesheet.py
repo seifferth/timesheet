@@ -5,7 +5,7 @@ from textwrap import wrap
 from timesheet_types import *
 from timesheet_parser import parse
 from timesheet_printer import \
-    print_sum, print_hours_only, print_hours_only_novat
+    print_sum, print_hours_only, print_hours_only_novat, print_custom
 
 if __name__ == "__main__":
     try:
@@ -24,3 +24,5 @@ if __name__ == "__main__":
         print(print_hours_only(log))
     elif sys.argv[1] == "hours_only_novat":
         print(print_hours_only_novat(log))
+    elif sys.argv[1] == "print":
+        print(print_custom(log, sys.argv[2]))
