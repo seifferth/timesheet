@@ -37,7 +37,7 @@ class Task:
             (k,self.attrs.get(k)) for k in sorted(self.attrs.keys())
         ])))
     def __repr__(self):
-        return f'<Task {self.name}, Attributes: {str(self.other)}>'
+        return f'<Task {self.name}, Attributes: {str(self.attrs)}>'
     def __str__(self):
         return self.get("desc")
 
