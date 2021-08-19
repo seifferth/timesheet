@@ -71,6 +71,8 @@ class Log:
                 f"already been set to '{self.defaults[key]}' earlier"
             )
         self.defaults[key] = val
+    def get_default(self, key: str) -> str:
+        return self.defaults.get(key)
     def add_task(self, task: Task):
         if task.name in self.tasks.keys():
             raise ParseError(0, f"Task '{task.name}' was already defined")
