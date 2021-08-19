@@ -25,4 +25,17 @@ if __name__ == "__main__":
     elif sys.argv[1] == "hours_only_novat":
         print(print_hours_only_novat(log))
     elif sys.argv[1] == "print":
-        print(print_custom(log, sys.argv[2]))
+        print(print_custom(log, sys.argv[2], undefined="undefined"))
+    elif sys.argv[1] in ("fields"):
+        # Print all fields that can be used for format strings
+        tasks = [ x[0] for x in log.get_times() ]
+        attrs = [ "date", "time", "task" ]
+        for k in log.defaults.keys():
+            if k not in attrs: attrs.append(k)
+        for t in tasks:
+            for k in t.attrs.keys():
+                if k not in attrs: attrs.append(k)
+        print('\n'.join(attrs))
+    else:
+        print(f"Unknown command '{sys.argv[1]}'", file=sys.stderr)
+        exit(1)
