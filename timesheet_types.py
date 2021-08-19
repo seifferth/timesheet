@@ -85,3 +85,12 @@ class Log:
         return result
     def get_days(self) -> set[str]:
         return { e[0].date for e in self.entries.values() }
+    def get_fields(self) -> list[str]:
+        tasks = [ x[0] for x in self.get_times() ]
+        attrs = [ "date", "time", "task" ]
+        for k in self.defaults.keys():
+            if k not in attrs: attrs.append(k)
+        for t in tasks:
+            for k in t.attrs.keys():
+                if k not in attrs: attrs.append(k)
+        return attrs

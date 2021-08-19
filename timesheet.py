@@ -28,14 +28,7 @@ if __name__ == "__main__":
         print(print_custom(log, sys.argv[2], undefined="undefined"))
     elif sys.argv[1] in ("fields"):
         # Print all fields that can be used for format strings
-        tasks = [ x[0] for x in log.get_times() ]
-        attrs = [ "date", "time", "task" ]
-        for k in log.defaults.keys():
-            if k not in attrs: attrs.append(k)
-        for t in tasks:
-            for k in t.attrs.keys():
-                if k not in attrs: attrs.append(k)
-        print('\n'.join(attrs))
+        print('\n'.join(log.get_fields()))
     else:
         print(f"Unknown command '{sys.argv[1]}'", file=sys.stderr)
         exit(1)
