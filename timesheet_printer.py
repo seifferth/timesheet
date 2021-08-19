@@ -16,7 +16,7 @@ def print_sum(log: Log) -> str:
         lines.append(d.date)
         for task, time in d.times.items():
             daily_total += time; grand_total += time
-            desc = f'{task.name} {task.desc}'
+            desc = f'{task.name} {task.get("desc")}'
             if len(desc) > 57: desc = desc[:55]+".."
             lines.append(
                 f'    {desc[:57]:<57} {time:>5.2f}'
@@ -37,14 +37,17 @@ def print_hours_only(log: Log) -> str:
     lines.append("Date,Description,Rate,Hours,Net,VAT,Gross")
     for d in log.days:
         for task, time in d.times.items():
-            desc = task.desc if ',' not in task.desc else f'"{task.desc}"'
-            rate = task.rate if task.rate != None else log.default_rate \
-                             if log.default_rate != None else ""
+            desc = task.get("desc") if ',' not in task.get("desc") \
+                   else f'"{task.get("desc")}"'
+            rate = task.get("rate") if task.get("rate") != None else \
+                   log.get_default("rate") if log.get_default("rate") != None \
+                   else ""
             if rate: rate = Decimal(rate)
             net = time*rate if rate else ""
             total_hours += time
-            vat = task.vat if task.vat != None else log.default_vat \
-                           if log.default_vat != None else ""
+            vat = task.get("vat") if task.get("vat") != None else \
+                  log.get_default("vat") if log.get_default("vat") != None \
+                  else ""
             if vat: vat = Decimal(vat)
             if net: total_net += net
             gross = ""
@@ -64,9 +67,11 @@ def print_hours_only_novat(log: Log) -> str:
     lines.append("Date,Description,Rate,Hours,Price")
     for d in log.days:
         for task, time in d.times.items():
-            desc = task.desc if ',' not in task.desc else f'"{task.desc}"'
-            rate = task.rate if task.rate != None else log.default_rate \
-                             if log.default_rate != None else ""
+            desc = task.get("desc") if ',' not in task.get("desc") \
+                   else f'"{task.get("desc")}"'
+            rate = task.get("rate") if task.get("rate") != None else \
+                   log.get_default("rate") if log.get_default("rate") != None \
+                   else ""
             if rate: rate = Decimal(rate)
             price = time*rate if rate else ""
             total_hours += time
@@ -86,10 +91,7 @@ def print_custom(log: Log, format: str, undefined: str="undefined") -> str:
                 if f == "date":         linedict["date"] = d.date
                 elif f == "task":       linedict["task"] = task.name
                 elif f == "time":       linedict["time"] = time
-                elif f == "desc":       linedict["desc"] = task.desc
-                elif f == "rate":       linedict["rate"] = task.rate
-                elif f == "vat":        linedict["vat"]  = task.vat
-                else:                   linedict[f] = task.other.get(f, None)
+                else:                   linedict[f] = task.attrs.get(f, None)
             for k, v in linedict.items():
                 if v == None: linedict[k] = undefined
             lines.append(format.format(**linedict))

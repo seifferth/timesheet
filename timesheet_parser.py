@@ -71,18 +71,13 @@ def parse_task(lines: list[str], log: Log) -> None:
                 f"Expected task attribute of form 'name = val' but found '{l}'"
             )
         key, val = re.split(r'\s*=\s*', l, maxsplit=1)
-        if key == "desc":       t.set_desc(val)
-        elif key == "rate":     t.set_rate(val)
-        elif key == "vat":      t.set_vat(val)
-        else:                   t.set_other(key, val)
+        t.set(key, val)
     log.add_task(t)
 
 def parse_default(lines: list[str], log: Log) -> None:
     for l in lines:
         key, val = re.split(r'\s*=\s', l, maxsplit=1)
-        if key == "rate":  log.set_default_rate(val)
-        elif key == "vat": log.set_default_vat(val)
-        else: raise ParseError(0, f"Unknown default value '{key}'")
+        log.set_default(key, val)
 
 def strip_comments(log: str) -> str:
     """Strips comments and trailing whitespace"""

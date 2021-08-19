@@ -15,55 +15,31 @@ class ValidationError(Exception):
 class Task:
     def copy(self, desc=None, rate=None, vat=None):
         t = Task(self.name)
-        t.other = { k: v for k, v in self.other.items() }
-        if desc != None:        t.set_desc(desc)
-        elif self.desc != None: t.set_desc(self.desc)
-        if rate != None:        t.set_rate(rate)
-        elif self.rate != None: t.set_rate(self.rate)
-        if vat  != None:        t.set_vat(vat)
-        elif self.vat  != None: t.set_vat(self.vat)
+        t.attrs = { k: v for k, v in self.attrs.items() }
+        if desc != None:        t.attrs["desc"] = desc
+        if rate != None:        t.attrs["rate"] = rate
+        if vat  != None:        t.attrs["vat"]  = vat
         return t
     def __init__(self, name: str):
         self.name: str = name
-        self.desc: str = None
-        self.rate: str = None
-        self.vat:  str = None
-        self.other: dict[str,str] = dict()
-    def set_other(self, key: str, val: str):
-        if key in self.other.keys() and val != self.other[key]:
+        self.attrs: dict[str,str] = dict()
+    def set(self, key: str, val: str):
+        if key in self.attrs.keys() and val != self.attrs[key]:
             raise ParseError(0,
                 f"Cannot set task {key} to '{val}', because it has "\
-                f"already been set to '{self.other[key]}' earlier"
+                f"already been set to '{self.attrs[key]}' earlier"
             )
-        self.other[key] = val
-    def set_desc(self, desc: str):
-        if self.desc != None and desc != self.desc:
-            raise ParseError(0,
-                f"Cannot set task desc to '{desc}', because it has "\
-                f"already been set to '{self.desc}' earlier"
-            )
-        self.desc = desc
-    def set_rate(self, rate: str):
-        if self.rate != None and rate != self.rate:
-            raise ParseError(0,
-                f"Cannot set task rate to '{rate}', because it has "\
-                f"already been set to '{self.rate}' earlier"
-            )
-        self.rate = rate
-    def set_vat(self, vat: str):
-        if self.vat != None and vat != self.vat:
-            raise ParseError(0,
-                f"Cannot set task vat to '{vat}', because it has "\
-                f"already been set to '{self.vat}' earlier"
-            )
-        self.vat = vat
+        self.attrs[key] = val
+    def get(self, key: str) -> str:
+        return self.attrs.get(key)
     def __hash__(self):
-        return hash((self.name, self.rate, self.vat))
+        return hash((self.name, str([
+            (k,self.attrs.get(k)) for k in sorted(self.attrs.keys())
+        ])))
     def __repr__(self):
-        return f'<Task {self.name}, Rate {self.rate}, VAT {self.vat}, '\
-               f'Desc {self.desc}>'
+        return f'<Task {self.name}, Attributes: {str(self.other)}>'
     def __str__(self):
-        return self.desc
+        return self.get("desc")
 
 class Time:
     def __init__(self, time: str):
@@ -86,23 +62,15 @@ class Day:
 class Log:
     def __init__(self):
         self.tasks: dict[str,Task] = dict()
-        self.default_rate: str = None
-        self.default_vat: str = None
+        self.defaults: dict[str,str] = dict()
         self.days: list[Day] = list()
-    def set_default_rate(self, rate: str):
-        if self.default_rate != None and rate != self.default_rate:
+    def set_default(self, key, val):
+        if key in self.defaults.keys() and val != self.defaults[key]:
             raise ParseError(0,
-                f"Cannot set default rate to '{rate}', because it has "\
-                f"already been set to '{self.default_rate}' earlier"
+                f"Cannot set default {key} to '{val}', because it has "\
+                f"already been set to '{self.defaults[key]}' earlier"
             )
-        self.default_rate = rate
-    def set_default_vat(self, vat: str):
-        if self.default_vat != None and vat != self.default_vat:
-            raise ParseError(0,
-                f"Cannot set default vat to '{vat}', because it has "\
-                f"already been set to '{self.default_vat}' earlier"
-            )
-        self.default_vat = vat
+        self.defaults[key] = val
     def add_task(self, task: Task):
         if task.name in self.tasks.keys():
             raise ParseError(0, f"Task '{task.name}' was already defined")
