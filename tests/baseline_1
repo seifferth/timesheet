@@ -1,0 +1,59 @@
+>>> args = sum
+>>> code = 0
+>>> stdin >>>
+# Some stuff here
+task something desc = Hello World task
+2021-01-01
+    10:00 start something
+    11:00 stop
+>>> stdout >>>
+2021-01-01
+    something Hello World task                                 1.00
+    Total hours .............................................. 1.00
+
+Grand total .................................................. 1.00
+>>> stderr >>>
+--------------------------------------8<--------------------------------------
+>>> args = sum
+>>> code = 0
+>>> stdin >>>
+# Some stuff here
+task something desc = Hello World task
+2021-01-01
+    10:00 start something
+    11:00 stop
+    13:00 start
+        13:00 start something
+    13:30 stop
+>>> stdout >>>
+2021-01-01
+    something Hello World task                                 1.50
+    Total hours .............................................. 1.50
+
+Grand total .................................................. 1.50
+>>> stderr >>>
+--------------------------------------8<--------------------------------------
+>>> args = sum
+>>> code = 0
+>>> stdin >>>
+# Some stuff here
+task something desc = Hello World task
+task else      desc = Hello World task
+               rate = 50
+               vat  = .19
+2021-01-01
+    10:00 start something
+    11:00 start else
+    11:10 stop
+    13:00 start
+        13:00 start something
+    13:30 stop
+>>> stdout >>>
+2021-01-01
+    something Hello World task                                 1.50
+    else Hello World task                                      0.17
+    Total hours .............................................. 1.67
+
+Grand total .................................................. 1.67
+>>> stderr >>>
+--------------------------------------8<--------------------------------------

@@ -1,0 +1,69 @@
+>>> args = sum
+>>> code = 1
+>>> stdin >>>
+task something desc = Hello World task
+2021-01-01
+    11:00 stop
+>>> stdout >>>
+>>> stderr >>>
+Error while parsing line 3: Cannot stop time entry without starting it
+first
+  | task something desc = Hello World task
+  | 2021-01-01
+  >     11:00 stop
+--------------------------------------8<--------------------------------------
+>>> args = sum
+>>> code = 1
+>>> stdin >>>
+task something desc = Hello World task
+2021-01-01
+    11:00 start
+    11:00 start
+    11:00 start
+>>> stdout >>>
+>>> stderr >>>
+Error while parsing line 4: Cannot create an initial start time
+without stopping the last count first
+  | 2021-01-01
+  |     11:00 start
+  >     11:00 start
+  |     11:00 start
+--------------------------------------8<--------------------------------------
+>>> args = sum
+>>> code = 1
+>>> stdin >>>
+# Some initial comment
+task something desc = Hello World task
+2021-01-01
+    11:00 start
+    11:00 start
+    11:00 start
+>>> stdout >>>
+>>> stderr >>>
+Error while parsing line 5: Cannot create an initial start time
+without stopping the last count first
+  | 2021-01-01
+  |     11:00 start
+  >     11:00 start
+  |     11:00 start
+--------------------------------------8<--------------------------------------
+>>> skip = true
+>>> comment = This doesn't work yet, so we skip it.
+>>> args = sum
+>>> code = 1
+>>> stdin >>>
+# Some initial comment and emptyline
+task something desc = Hello World task
+2021-01-01
+    11:00 start
+    11:00 start
+    11:00 start
+>>> stdout >>>
+>>> stderr >>>
+Error while parsing line 6: Cannot create an initial start time
+without stopping the last count first
+  | 2021-01-01
+  |     11:00 start
+  >     11:00 start
+  |     11:00 start
+--------------------------------------8<--------------------------------------
