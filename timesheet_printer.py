@@ -11,7 +11,7 @@ def dot_total(total: str) -> str:
 def print_sum(log: Log) -> str:
     lines = list()
     grand_total = Decimal(0)
-    for date in log.get_days():
+    for date in sorted(log.get_days()):
         daily_total = Decimal(0)
         lines.append(date)
         entries: dict[str,Decimal] = dict()
