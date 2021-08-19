@@ -78,7 +78,7 @@ def print_hours_only_novat(log: Log) -> str:
 
 def print_custom(log: Log, format: str, undefined: str="undefined") -> str:
     lines = list()
-    fields = re.findall(r'{([^{]*)}', format)
+    fields = re.findall(r'{([^}:]*)[}:]', format)
     for d in log.days:
         for task, time in d.times.items():
             linedict = dict()
