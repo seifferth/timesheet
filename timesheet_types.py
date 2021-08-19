@@ -31,9 +31,6 @@ class Task:
         self.attrs[key] = val
     def get(self, key: str) -> str:
         return self.attrs.get(key)
-    def id(self):
-        attrs = [(k, self.attrs.get(k)) for k in sorted(self.attrs.keys())]
-        return f'{self.name} {self.date} {attrs}'
     def __repr__(self):
         attrs = [(k, self.attrs.get(k)) for k in sorted(self.attrs.keys())]
         return f'<Task {self.name} {self.date} {attrs}>'
@@ -55,7 +52,7 @@ class Log:
     def __init__(self):
         self.taskdefs: dict[str,Task] = dict()
         self.defaults: dict[str,str] = dict()
-        self.entries: dict[str,list] = dict()
+        self.entries: list[tuple[Task,Decimal]] = list()
     def set_default(self, key, val):
         if key in self.defaults.keys() and val != self.defaults[key]:
             raise ParseError(0,
@@ -74,17 +71,15 @@ class Log:
             raise ParseError(0, f"Task '{name}' referenced before asignment")
         return self.taskdefs.get(name)
     def add_time(self, task: Task, hours: Decimal) -> None:
-        if task.id() not in self.entries.keys():
-            self.entries[task.id()] = [task, Decimal(0)]
-        self.entries[task.id()][1] += hours
+        self.entries.append((task, hours))
     def get_times(self, begin: str=None, end: str=None) \
                                     -> list[tuple[Task,Decimal]]:
-        result = list(self.entries.values())
+        result = [(k, v) for k, v in self.entries]
         if begin: result = [(k, v) for k, v in result if k.date >= begin]
         if end: result = [(k, v) for k, v in result if k.date < end]
         return result
     def get_days(self) -> set[str]:
-        return { e[0].date for e in self.entries.values() }
+        return { e[0].date for e in self.entries }
     def get_fields(self) -> list[str]:
         tasks = [ x[0] for x in self.get_times() ]
         attrs = [ "date", "time", "task" ]

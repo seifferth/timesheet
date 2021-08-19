@@ -14,9 +14,13 @@ def print_sum(log: Log) -> str:
     for date in log.get_days():
         daily_total = Decimal(0)
         lines.append(date)
+        entries: dict[str,Decimal] = dict()
         for task, time in log.get_times(begin=date, end=date+"a"):
             daily_total += time; grand_total += time
             desc = f'{task.name} {task.get("desc")}'
+            if desc not in entries: entries[desc] = Decimal(0)
+            entries[desc] += time
+        for desc, time in entries.items():
             if len(desc) > 57: desc = desc[:55]+".."
             lines.append(
                 f'    {desc[:57]:<57} {time:>5.2f}'
@@ -29,69 +33,37 @@ def print_sum(log: Log) -> str:
     )
     return '\n'.join(lines)
 
-def print_hours_only(log: Log) -> str:
-    lines = list()
-    total_hours = Decimal(0)
-    total_net = Decimal(0)
-    total_gross = Decimal(0)
-    lines.append("Date,Description,Rate,Hours,Net,VAT,Gross")
-    for task, time in log.get_times():
-        desc = task.get("desc") if ',' not in task.get("desc") \
-               else f'"{task.get("desc")}"'
-        rate = task.get("rate") if task.get("rate") != None else \
-               log.get_default("rate") if log.get_default("rate") != None \
-               else ""
-        if rate: rate = Decimal(rate)
-        net = time*rate if rate else ""
-        total_hours += time
-        vat = task.get("vat") if task.get("vat") != None else \
-              log.get_default("vat") if log.get_default("vat") != None \
-              else ""
-        if vat: vat = Decimal(vat)
-        if net: total_net += net
-        gross = ""
-        if net and vat: gross = net + net * vat
-        if gross: total_gross += gross
-        lines.append(f'{task.date},{desc},{rate:.2f},{time:.2f},'\
-                     f'{net:.2f},{vat:.2f},{gross:>.2f}')
-    total_net = total_net if total_net else ""
-    total_gross = total_gross if total_gross else ""
-    lines.append(
-        f'Total,,,{total_hours:.2f},{total_net:.2f},,{total_gross:>.2f}'
-    )
-    return '\n'.join(lines)
-
-def print_hours_only_novat(log: Log) -> str:
-    lines = list()
-    total_hours = Decimal(0)
-    total_price = Decimal(0)
-    lines.append("Date,Description,Rate,Hours,Price")
-    for task, time in log.get_times():
-        desc = task.get("desc") if ',' not in task.get("desc") \
-               else f'"{task.get("desc")}"'
-        rate = task.get("rate") if task.get("rate") != None else \
-               log.get_default("rate") if log.get_default("rate") != None \
-               else ""
-        if rate: rate = Decimal(rate)
-        price = time*rate if rate else ""
-        total_hours += time
-        if price: total_price += price
-        lines.append(f'{task.date},{desc},{rate:.2f},{time:.2f},{price:.2f}')
-    total_price = total_price if total_price else ""
-    lines.append(f'Total,,,{total_hours:.2f},{total_price:.2f}')
-    return '\n'.join(lines)
-
 def print_custom(log: Log, format: str, undefined: str="undefined") -> str:
     lines = list()
-    fields = re.findall(r'{([^}:]*)[}:]', format)
+    format = format.replace("{time}", "{time:.2f}") # Set default time format
+    fields = set(re.findall(r'{([^}:]*)[}:]', format))
+    entries: dict[str,list] = dict()
     for task, time in log.get_times():
         linedict = dict()
+        linedict["time"] = Decimal(0)
         for f in fields:
             if f == "date":         linedict["date"] = task.date
             elif f == "task":       linedict["task"] = task.name
-            elif f == "time":       linedict["time"] = time
+            elif f == "time":       pass
             else:                   linedict[f] = task.attrs.get(f, None)
         for k, v in linedict.items():
             if v == None: linedict[k] = undefined
+        line_as_key = format.format(**linedict)
+        if line_as_key not in entries.keys():
+            entries[line_as_key] = [linedict, Decimal(0)]
+        entries[line_as_key][1] += time
+    for linedict, time in entries.values():
+        linedict["time"] = time
         lines.append(format.format(**linedict))
     return '\n'.join(lines)
+
+def print_hours_only(log: Log) -> str:
+    return "Date,Description,Rate,Hours,Net,VAT,Gross\n" + \
+        print_custom(log, '{date},"{desc}",{rate},{time},,{vat},',
+                     undefined="") + \
+        "\nTotal,,,,,,"
+
+def print_hours_only_novat(log: Log) -> str:
+    return "Date,Description,Rate,Hours,Price\n" + \
+        print_custom(log, '{date},"{desc}",{rate},{time},', undefined="") + \
+        "\nTotal,,,,"
