@@ -50,10 +50,9 @@ def parse_day(date: str, lines: list[str], log: Log) -> None:
                     if key == "desc":           task = task.copy(desc=val)
                     elif key == "rate":         task = task.copy(rate=val)
                     elif key == "vat":          task = task.copy(vat=val)
-                    else: raise ParseError(lno,
-                        f"Time entry level overrides of '{key}' are "\
-                        f"been implemented yet"
-                    )
+                    else:
+                        task = task.copy()
+                        task.other[key] = val
                 if task not in times.keys(): times[task] = Decimal(0)
                 last_start = time
             else:
@@ -75,7 +74,7 @@ def parse_task(lines: list[str], log: Log) -> None:
         if key == "desc":       t.set_desc(val)
         elif key == "rate":     t.set_rate(Decimal(val))
         elif key == "vat":      t.set_vat(Decimal(val))
-        else: raise ParseError(0, f"Unknown task attribute '{key}'")
+        else:                   t.set_other(key, val)
     log.add_task(t)
 
 def parse_default(lines: list[str], log: Log) -> None:

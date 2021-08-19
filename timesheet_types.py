@@ -15,6 +15,7 @@ class ValidationError(Exception):
 class Task:
     def copy(self, desc=None, rate=None, vat=None):
         t = Task(self.name)
+        t.other = { k: v for k, v in self.other.items() }
         if desc != None:        t.set_desc(desc)
         elif self.desc != None: t.set_desc(self.desc)
         if rate != None:        t.set_rate(rate)
@@ -27,6 +28,14 @@ class Task:
         self.desc: str = None
         self.rate: Decimal = None
         self.vat:  Decimal = None
+        self.other: dict[str,str] = dict()
+    def set_other(self, key: str, val: str):
+        if key in self.other.keys() and val != self.other[key]:
+            raise ParseError(0,
+                f"Cannot set task {key} to '{val}', because it has "\
+                f"already been set to '{self.other[key]}' earlier"
+            )
+        self.other[key] = val
     def set_desc(self, desc: str):
         if self.desc != None and desc != self.desc:
             raise ParseError(0,

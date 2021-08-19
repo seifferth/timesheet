@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import re
 from timesheet_types import *
 
 def dot_total(total: str) -> str:
@@ -72,19 +73,21 @@ def print_hours_only_novat(log: Log) -> str:
     lines.append(f'Total,,,{total_hours},{total_price}')
     return '\n'.join(lines)
 
-def print_custom(log: Log, format: str) -> str:
+def print_custom(log: Log, format: str, undefined: str="undefined") -> str:
     lines = list()
+    fields = re.findall(r'{([^{]*)}', format)
     for d in log.days:
         for task, time in d.times.items():
-            linedict = {
-                'date': d.date,
-                'task': task.name,
-                'time': time,
-                'desc': task.desc,
-                'rate': task.rate,
-                'vat':  task.vat,
-            }
+            linedict = dict()
+            for f in fields:
+                if f == "date":         linedict["date"] = d.date
+                elif f == "task":       linedict["task"] = task.name
+                elif f == "time":       linedict["time"] = time
+                elif f == "desc":       linedict["desc"] = task.desc
+                elif f == "rate":       linedict["rate"] = task.rate
+                elif f == "vat":        linedict["vat"]  = task.vat
+                else:                   linedict[f] = task.other.get(f, None)
             for k, v in linedict.items():
-                if v == None: linedict[k] = ""
+                if v == None: linedict[k] = undefined
             lines.append(format.format(**linedict))
     return '\n'.join(lines)
