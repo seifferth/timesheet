@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import os, re
+import os, sys, re
 from subprocess import run
 from io import StringIO
 from difflib import context_diff
@@ -84,7 +84,9 @@ def load_tests(directory: str):
             yield t
 
 if __name__ == "__main__":
+    selection = sys.argv[1:]
     for t in load_tests("tests"):
+        if selection and t.filename not in selection: continue
         testfilename = t.filename if len(t.filename) < 30 \
                                   else t.filename[:28]+".."
         testname = t.name if len(t.name) < 20 else t.name[:38]+".."
