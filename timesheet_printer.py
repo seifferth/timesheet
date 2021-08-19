@@ -40,10 +40,12 @@ def print_hours_only(log: Log) -> str:
             desc = task.desc if ',' not in task.desc else f'"{task.desc}"'
             rate = task.rate if task.rate != None else log.default_rate \
                              if log.default_rate != None else ""
+            if rate: rate = Decimal(rate)
             net = time*rate if rate else ""
             total_hours += time
             vat = task.vat if task.vat != None else log.default_vat \
                            if log.default_vat != None else ""
+            if vat: vat = Decimal(vat)
             if net: total_net += net
             gross = ""
             if net and vat: gross = net + net * vat
@@ -65,6 +67,7 @@ def print_hours_only_novat(log: Log) -> str:
             desc = task.desc if ',' not in task.desc else f'"{task.desc}"'
             rate = task.rate if task.rate != None else log.default_rate \
                              if log.default_rate != None else ""
+            if rate: rate = Decimal(rate)
             price = time*rate if rate else ""
             total_hours += time
             if price: total_price += price

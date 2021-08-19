@@ -26,8 +26,8 @@ class Task:
     def __init__(self, name: str):
         self.name: str = name
         self.desc: str = None
-        self.rate: Decimal = None
-        self.vat:  Decimal = None
+        self.rate: str = None
+        self.vat:  str = None
         self.other: dict[str,str] = dict()
     def set_other(self, key: str, val: str):
         if key in self.other.keys() and val != self.other[key]:
@@ -43,14 +43,14 @@ class Task:
                 f"already been set to '{self.desc}' earlier"
             )
         self.desc = desc
-    def set_rate(self, rate: Decimal):
+    def set_rate(self, rate: str):
         if self.rate != None and rate != self.rate:
             raise ParseError(0,
                 f"Cannot set task rate to '{rate}', because it has "\
                 f"already been set to '{self.rate}' earlier"
             )
         self.rate = rate
-    def set_vat(self, vat: Decimal):
+    def set_vat(self, vat: str):
         if self.vat != None and vat != self.vat:
             raise ParseError(0,
                 f"Cannot set task vat to '{vat}', because it has "\
@@ -86,17 +86,17 @@ class Day:
 class Log:
     def __init__(self):
         self.tasks: dict[str,Task] = dict()
-        self.default_rate: Decimal = None
-        self.default_vat: Decimal = None
+        self.default_rate: str = None
+        self.default_vat: str = None
         self.days: list[Day] = list()
-    def set_default_rate(self, rate: Decimal):
+    def set_default_rate(self, rate: str):
         if self.default_rate != None and rate != self.default_rate:
             raise ParseError(0,
                 f"Cannot set default rate to '{rate}', because it has "\
                 f"already been set to '{self.default_rate}' earlier"
             )
         self.default_rate = rate
-    def set_default_vat(self, vat: Decimal):
+    def set_default_vat(self, vat: str):
         if self.default_vat != None and vat != self.default_vat:
             raise ParseError(0,
                 f"Cannot set default vat to '{vat}', because it has "\

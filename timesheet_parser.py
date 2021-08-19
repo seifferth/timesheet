@@ -72,16 +72,16 @@ def parse_task(lines: list[str], log: Log) -> None:
             )
         key, val = re.split(r'\s*=\s*', l, maxsplit=1)
         if key == "desc":       t.set_desc(val)
-        elif key == "rate":     t.set_rate(Decimal(val))
-        elif key == "vat":      t.set_vat(Decimal(val))
+        elif key == "rate":     t.set_rate(val)
+        elif key == "vat":      t.set_vat(val)
         else:                   t.set_other(key, val)
     log.add_task(t)
 
 def parse_default(lines: list[str], log: Log) -> None:
     for l in lines:
         key, val = re.split(r'\s*=\s', l, maxsplit=1)
-        if key == "rate":  log.set_default_rate(Decimal(val))
-        elif key == "vat": log.set_default_vat(Decimal(val))
+        if key == "rate":  log.set_default_rate(val)
+        elif key == "vat": log.set_default_vat(val)
         else: raise ParseError(0, f"Unknown default value '{key}'")
 
 def strip_comments(log: str) -> str:
