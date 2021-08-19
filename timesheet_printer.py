@@ -45,9 +45,13 @@ def print_custom(log: Log, format: str, undefined: str="undefined") -> str:
             if f == "date":         linedict["date"] = task.date
             elif f == "task":       linedict["task"] = task.name
             elif f == "time":       pass
-            else:                   linedict[f] = task.attrs.get(f, None)
-        for k, v in linedict.items():
-            if v == None: linedict[k] = undefined
+            elif f in task.attrs.keys():
+                linedict[f] = task.attrs.get(f)
+            elif f in log.get_task(task.name).attrs.keys():
+                linedict[f] = log.get_task(task.name).attrs.get(f)
+            elif f in log.defaults.keys():
+                linedict[f] = log.defaults.get(f)
+            else:                   linedict[f] = undefined
         line_as_key = format.format(**linedict)
         if line_as_key not in entries.keys():
             entries[line_as_key] = [linedict, Decimal(0)]
