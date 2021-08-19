@@ -13,16 +13,15 @@ class ValidationError(Exception):
     pass
 
 class Task:
-    def copy(self, desc=None, rate=None, vat=None):
+    def copy(self, date=None):
         t = Task(self.name)
+        if date: t.date = date
         t.attrs = { k: v for k, v in self.attrs.items() }
-        if desc != None:        t.attrs["desc"] = desc
-        if rate != None:        t.attrs["rate"] = rate
-        if vat  != None:        t.attrs["vat"]  = vat
         return t
     def __init__(self, name: str):
         self.name: str = name
         self.attrs: dict[str,str] = dict()
+        self.date: str = None
     def set(self, key: str, val: str):
         if key in self.attrs.keys() and val != self.attrs[key]:
             raise ParseError(0,
@@ -32,12 +31,12 @@ class Task:
         self.attrs[key] = val
     def get(self, key: str) -> str:
         return self.attrs.get(key)
-    def __hash__(self):
-        return hash((self.name, str([
-            (k,self.attrs.get(k)) for k in sorted(self.attrs.keys())
-        ])))
+    def id(self):
+        attrs = [(k, self.attrs.get(k)) for k in sorted(self.attrs.keys())]
+        return f'{self.name} {self.date} {attrs}'
     def __repr__(self):
-        return f'<Task {self.name}, Attributes: {str(self.attrs)}>'
+        attrs = [(k, self.attrs.get(k)) for k in sorted(self.attrs.keys())]
+        return f'<Task {self.name} {self.date} {attrs}>'
     def __str__(self):
         return self.get("desc")
 
@@ -52,18 +51,11 @@ class Time:
         """Time in minutes since midnight"""
         return self.__value
 
-class Day:
-    def __init__(self, date):
-        self.date: str = date
-        self.times: dict[Task,Decimal] = None
-    def add_times(self, times: dict[Task,Decimal]) -> None:
-        self.times = times
-
 class Log:
     def __init__(self):
         self.taskdefs: dict[str,Task] = dict()
         self.defaults: dict[str,str] = dict()
-        self.days: list[Day] = list()
+        self.entries: dict[str,list] = dict()
     def set_default(self, key, val):
         if key in self.defaults.keys() and val != self.defaults[key]:
             raise ParseError(0,
@@ -81,5 +73,15 @@ class Log:
         if name not in self.taskdefs.keys():
             raise ParseError(0, f"Task '{name}' referenced before asignment")
         return self.taskdefs.get(name)
-    def add_day(self, day: Day):
-        self.days.append(day)
+    def add_time(self, task: Task, hours: Decimal) -> None:
+        if task.id() not in self.entries.keys():
+            self.entries[task.id()] = [task, Decimal(0)]
+        self.entries[task.id()][1] += hours
+    def get_times(self, begin: str=None, end: str=None) \
+                                    -> list[tuple[Task,Decimal]]:
+        result = list(self.entries.values())
+        if begin: result = [(k, v) for k, v in result if k.date >= begin]
+        if end: result = [(k, v) for k, v in result if k.date < end]
+        return result
+    def get_days(self) -> set[str]:
+        return { e[0].date for e in self.entries.values() }

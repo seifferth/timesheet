@@ -5,8 +5,6 @@ from decimal import Decimal
 from timesheet_types import *
 
 def parse_day(date: str, lines: list[str], log: Log) -> None:
-    d = Day(date)
-    times: dict[Task,Decimal] = dict()
     global_start: Time = None
     last_start: Time = None
     for lno, l in enumerate(lines):
@@ -25,7 +23,7 @@ def parse_day(date: str, lines: list[str], log: Log) -> None:
                     "Cannot stop time entry without starting it first"
                 )
                 # TODO: Use global start for double-checking
-                times[task] += time.decimal() - last_start.decimal()
+                log.add_time(task, time.decimal() - last_start.decimal())
                 global_start = None
                 last_start = None
             elif entry_type == "start" and l == None:
@@ -38,29 +36,22 @@ def parse_day(date: str, lines: list[str], log: Log) -> None:
             elif entry_type == "start":
                 if global_start == None: global_start = time
                 if last_start != None:
-                    times[task] += time.decimal() - last_start.decimal()
+                    log.add_time(task, time.decimal() - last_start.decimal())
                 task, *l = l.split(maxsplit=1)
                 l = None if len(l) == 0 else l[0]
                 try:
-                    task = log.get_task(task)
+                    task = log.get_task(task).copy(date=date)
                 except ParseError as e:
                     raise ParseError(lno, e.msg)
                 if l:       # TODO: Add support for multiple overrides
                     key, val = re.split(r'\s*=\s', l, maxsplit=1)
-                    if key == "desc":           task = task.copy(desc=val)
-                    elif key == "rate":         task = task.copy(rate=val)
-                    elif key == "vat":          task = task.copy(vat=val)
-                    else:
-                        task = task.copy()
-                        task.other[key] = val
-                if task not in times.keys(): times[task] = Decimal(0)
+                    task = task.copy(date=date)
+                    task.attrs[key] = val
                 last_start = time
             else:
                 raise ParseError(lno,
                     f"Unknown time entry type '{entry_type}'"
                 )
-    d.add_times(times)
-    log.add_day(d)
 
 def parse_task(lines: list[str], log: Log) -> None:
     name, l = lines[0].split(maxsplit=1)
