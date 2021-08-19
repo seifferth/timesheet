@@ -53,11 +53,13 @@ def print_hours_only(log: Log) -> str:
             gross = ""
             if net and vat: gross = net + net * vat
             if gross: total_gross += gross
-            lines.append(f'{d.date},{desc},{rate},{time},{net},{vat},'\
-                  f'{gross:>.2f}')
+            lines.append(f'{d.date},{desc},{rate:.2f},{time:.2f},'\
+                         f'{net:.2f},{vat:.2f},{gross:>.2f}')
     total_net = total_net if total_net else ""
     total_gross = total_gross if total_gross else ""
-    lines.append(f'Total,,,{total_hours},{total_net},,{total_gross:>.2f}')
+    lines.append(
+        f'Total,,,{total_hours:.2f},{total_net:.2f},,{total_gross:>.2f}'
+    )
     return '\n'.join(lines)
 
 def print_hours_only_novat(log: Log) -> str:
@@ -76,9 +78,9 @@ def print_hours_only_novat(log: Log) -> str:
             price = time*rate if rate else ""
             total_hours += time
             if price: total_price += price
-            lines.append(f'{d.date},{desc},{rate},{time},{price}')
+            lines.append(f'{d.date},{desc},{rate:.2f},{time:.2f},{price:.2f}')
     total_price = total_price if total_price else ""
-    lines.append(f'Total,,,{total_hours},{total_price}')
+    lines.append(f'Total,,,{total_hours:.2f},{total_price:.2f}')
     return '\n'.join(lines)
 
 def print_custom(log: Log, format: str, undefined: str="undefined") -> str:
