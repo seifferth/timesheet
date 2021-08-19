@@ -18,13 +18,13 @@ def print_sum(log: Log) -> str:
             desc = f'{task.name} {task.desc}'
             if len(desc) > 57: desc = desc[:55]+".."
             lines.append(
-                f'    {desc[:57]:<57} {time/60:>5.2f}'
+                f'    {desc[:57]:<57} {time:>5.2f}'
             )
         lines.append("    "+dot_total(
-            f'Total hours {45*" "} {daily_total/60:>5.2f}'
+            f'Total hours {45*" "} {daily_total:>5.2f}'
         )); lines.append('')
     lines.append(
-        dot_total(f'Grand total{46*" "}{grand_total/60:>10.2f}')
+        dot_total(f'Grand total{46*" "}{grand_total:>10.2f}')
     )
     return '\n'.join(lines)
 
@@ -39,15 +39,15 @@ def print_hours_only(log: Log) -> str:
             desc = task.desc if ',' not in task.desc else f'"{task.desc}"'
             rate = task.rate if task.rate != None else log.default_rate \
                              if log.default_rate != None else ""
-            net = time/60*rate if rate else ""
-            total_hours += time/60
+            net = time*rate if rate else ""
+            total_hours += time
             vat = task.vat if task.vat != None else log.default_vat \
                            if log.default_vat != None else ""
             if net: total_net += net
             gross = ""
             if net and vat: gross = net + net * vat
             if gross: total_gross += gross
-            lines.append(f'{d.date},{desc},{rate},{time/60},{net},{vat},'\
+            lines.append(f'{d.date},{desc},{rate},{time},{net},{vat},'\
                   f'{gross:>.2f}')
     total_net = total_net if total_net else ""
     total_gross = total_gross if total_gross else ""
@@ -64,10 +64,10 @@ def print_hours_only_novat(log: Log) -> str:
             desc = task.desc if ',' not in task.desc else f'"{task.desc}"'
             rate = task.rate if task.rate != None else log.default_rate \
                              if log.default_rate != None else ""
-            price = time/60*rate if rate else ""
-            total_hours += time/60
+            price = time*rate if rate else ""
+            total_hours += time
             if price: total_price += price
-            lines.append(f'{d.date},{desc},{rate},{time/60},{price}')
+            lines.append(f'{d.date},{desc},{rate},{time},{price}')
     total_price = total_price if total_price else ""
     lines.append(f'Total,,,{total_hours},{total_price}')
     return '\n'.join(lines)
@@ -79,7 +79,7 @@ def print_custom(log: Log, format: str) -> str:
             linedict = {
                 'date': d.date,
                 'task': task.name,
-                'time': time/60,
+                'time': time,
                 'desc': task.desc,
                 'rate': task.rate,
                 'vat':  task.vat,

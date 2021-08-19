@@ -60,7 +60,7 @@ class Time:
     def __init__(self, time: str):
         try:
             h, m = time.split(":", 1)
-            self.__value = Decimal(h)*60 + Decimal(m)
+            self.__value = (Decimal(h)*60 + Decimal(m))/60
         except Exception as e:
             raise ParseError(0, f"Could not parse time '{time}'")
     def decimal(self):
