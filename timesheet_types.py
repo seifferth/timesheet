@@ -89,3 +89,26 @@ class Log:
             for k in t.attrs.keys():
                 if k not in attrs: attrs.append(k)
         return attrs
+    def select(self, fields: list[str], undefined="undefined") -> list[dict]:
+        lines: dict[tuple[str,Decimal]] = dict()
+        keyfields = sorted([ f for f in fields if f != "time" ])
+        for task, time in self.get_times():
+            linedict = dict()
+            for f in keyfields:
+                if f == "date":         linedict["date"] = task.date
+                elif f == "task":       linedict["task"] = task.name
+                elif f in task.attrs.keys():
+                    linedict[f] = task.attrs.get(f)
+                elif f in self.get_task(task.name).attrs.keys():
+                    linedict[f] = self.get_task(task.name).attrs.get(f)
+                elif f in self.defaults.keys():
+                    linedict[f] = self.defaults.get(f)
+                else:                   linedict[f] = undefined
+            key = str([ (f, linedict[f]) for f in keyfields ])
+            if key not in lines.keys(): lines[key] = (linedict, Decimal(0))
+            lines[key] = (lines[key][0], lines[key][1] + time)
+        result = list()
+        for linedict, time in lines.values():
+            linedict["time"] = time
+            result.append(linedict)
+        return result

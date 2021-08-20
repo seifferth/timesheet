@@ -37,27 +37,7 @@ def print_custom(log: Log, format: str, undefined: str="undefined") -> str:
     lines = list()
     format = format.replace("{time}", "{time:.2f}") # Set default time format
     fields = set(re.findall(r'{([^}:]*)[}:]', format))
-    entries: dict[str,list] = dict()
-    for task, time in log.get_times():
-        linedict = dict()
-        linedict["time"] = Decimal(0)
-        for f in fields:
-            if f == "date":         linedict["date"] = task.date
-            elif f == "task":       linedict["task"] = task.name
-            elif f == "time":       pass
-            elif f in task.attrs.keys():
-                linedict[f] = task.attrs.get(f)
-            elif f in log.get_task(task.name).attrs.keys():
-                linedict[f] = log.get_task(task.name).attrs.get(f)
-            elif f in log.defaults.keys():
-                linedict[f] = log.defaults.get(f)
-            else:                   linedict[f] = undefined
-        line_as_key = format.format(**linedict)
-        if line_as_key not in entries.keys():
-            entries[line_as_key] = [linedict, Decimal(0)]
-        entries[line_as_key][1] += time
-    for linedict, time in entries.values():
-        linedict["time"] = time
+    for linedict in log.select(fields):
         lines.append(format.format(**linedict))
     return '\n'.join(lines)
 
