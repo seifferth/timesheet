@@ -5,7 +5,8 @@ from textwrap import wrap
 from timesheet_types import *
 from timesheet_parser import parse
 from timesheet_printer import \
-    print_sum, print_hours_only, print_hours_only_novat, print_custom
+    print_sum, print_hours_only, print_hours_only_novat, print_custom, \
+    print_csv
 
 if __name__ == "__main__":
     try:
@@ -29,6 +30,9 @@ if __name__ == "__main__":
     elif sys.argv[1] in ("fields"):
         # Print all fields that can be used for format strings
         print('\n'.join(log.get_fields()))
+    elif sys.argv[1] == "select":
+        fields = "".join(sys.argv[2:]).split(",")
+        print(print_csv(log, fields), end="")
     else:
         print(f"Unknown command '{sys.argv[1]}'", file=sys.stderr)
         exit(1)

@@ -72,3 +72,12 @@ def print_hours_only_novat(log: Log) -> str:
                     f'{net:.2f}'])
     w.writerow(["Total","","",f'{total_time:.2f}',f'{total_net:.2f}'])
     result.seek(0); return result.read()
+
+def print_csv(log: Log, fields: list[str]) -> str:
+    result = StringIO()
+    w = csv.writer(result, lineterminator="\n")
+    w.writerow(fields)
+    for row in log.select(fields, undefined=""):
+        if "time" in row.keys(): row["time"] = f'{row["time"]:.2f}'
+        w.writerow([ row[f] for f in fields ])
+    result.seek(0); return result.read()
