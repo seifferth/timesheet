@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import re
 from decimal import Decimal
 
 class ParseError(Exception):
@@ -15,13 +16,14 @@ class ValidationError(Exception):
 class Task:
     def copy(self, date=None):
         t = Task(self.name)
-        if date: t.date = date
+        if date: t.set_date(date)
         t.attrs = { k: v for k, v in self.attrs.items() }
         return t
     def __init__(self, name: str):
         self.name: str = name
         self.attrs: dict[str,str] = dict()
         self.date: str = None
+        self.day: str = None; self.month: str = None; self.year: str = None
     def set(self, key: str, val: str):
         if key in self.attrs.keys() and val != self.attrs[key]:
             raise ParseError(0,
@@ -29,6 +31,16 @@ class Task:
                 f"already been set to '{self.attrs[key]}' earlier"
             )
         self.attrs[key] = val
+    def set_date(self, date: str) -> None:
+        if self.date != None:
+            raise ParseError(0,
+                f"Cannot set task date to '{date}', because it has "\
+                f"already been set to '{self.date}' earlier"
+            )
+        if not re.match(r'^[0-9]{4}-[0-9]{2}-[0-9]{2}$', date):
+            raise ParseError(0, f"Cannot parse date '{date}'")
+        self.date = date
+        self.year, self.month, self.day = date.split("-")
     def get(self, key: str) -> str:
         return self.attrs.get(key)
     def __repr__(self):
@@ -82,7 +94,7 @@ class Log:
         return { e[0].date for e in self.entries }
     def get_fields(self) -> list[str]:
         tasks = [ x[0] for x in self.get_times() ]
-        attrs = [ "date", "time", "task" ]
+        attrs = [ "date", "time", "task", "year", "month", "day" ]
         for k in self.defaults.keys():
             if k not in attrs: attrs.append(k)
         for t in tasks:
@@ -95,8 +107,11 @@ class Log:
         for task, time in self.get_times():
             linedict = dict()
             for f in keyfields:
-                if f == "date":         linedict["date"] = task.date
-                elif f == "task":       linedict["task"] = task.name
+                if f == "task":         linedict["task"]  = task.name
+                elif f == "date":       linedict["date"]  = task.date
+                elif f == "day":        linedict["day"]   = task.day
+                elif f == "month":      linedict["month"] = task.month
+                elif f == "year":       linedict["year"]  = task.year
                 elif f in task.attrs.keys():
                     linedict[f] = task.attrs.get(f)
                 elif f in self.get_task(task.name).attrs.keys():
