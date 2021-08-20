@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-import re
+import re, csv
+from io import StringIO
 from timesheet_types import *
 
 def dot_total(total: str) -> str:
@@ -31,7 +32,7 @@ def print_sum(log: Log) -> str:
     lines.append(
         dot_total(f'Grand total{46*" "}{grand_total:>10.2f}')
     )
-    return '\n'.join(lines)
+    return '\n'.join(lines)+'\n'
 
 def print_custom(log: Log, format: str, undefined: str="undefined") -> str:
     lines = list()
@@ -39,15 +40,35 @@ def print_custom(log: Log, format: str, undefined: str="undefined") -> str:
     fields = set(re.findall(r'{([^}:]*)[}:]', format))
     for linedict in log.select(fields):
         lines.append(format.format(**linedict))
-    return '\n'.join(lines)
+    return '\n'.join(lines)+'\n'
 
 def print_hours_only(log: Log) -> str:
-    return "Date,Description,Rate,Hours,Net,VAT,Gross\n" + \
-        print_custom(log, '{date},"{desc}",{rate},{time},,{vat},',
-                     undefined="") + \
-        "\nTotal,,,,,,"
+    result = StringIO()
+    total_time, total_net, total_gross = Decimal(0), Decimal(0), Decimal(0)
+    w = csv.writer(result, lineterminator="\n")
+    w.writerow(["Date","Description","Rate","Hours","Net","VAT","Gross"])
+    for row in log.select(["date","desc","rate","time","vat"], undefined=""):
+        rate = Decimal(row["rate"])
+        vat = Decimal(row["vat"])
+        net = row["time"] * rate
+        gross = net + net * vat
+        total_time += row["time"]; total_net += net; total_gross += gross
+        w.writerow([row["date"],row["desc"],row["rate"],f'{row["time"]:.2f}',
+                    f'{net:.2f}',row["vat"],f'{gross:.2f}'])
+    w.writerow(["Total","","",f'{total_time:.2f}',f'{total_net:.2f}',"",
+                f'{total_gross:.2f}'])
+    result.seek(0); return result.read()
 
 def print_hours_only_novat(log: Log) -> str:
-    return "Date,Description,Rate,Hours,Price\n" + \
-        print_custom(log, '{date},"{desc}",{rate},{time},', undefined="") + \
-        "\nTotal,,,,"
+    result = StringIO()
+    total_time, total_net = Decimal(0), Decimal(0)
+    w = csv.writer(result, lineterminator="\n")
+    w.writerow(["Date","Description","Rate","Hours","Price"])
+    for row in log.select(["date","desc","rate","time"], undefined=""):
+        rate = Decimal(row["rate"])
+        net = row["time"] * rate
+        total_time += row["time"]; total_net += net
+        w.writerow([row["date"],row["desc"],row["rate"],f'{row["time"]:.2f}',
+                    f'{net:.2f}'])
+    w.writerow(["Total","","",f'{total_time:.2f}',f'{total_net:.2f}'])
+    result.seek(0); return result.read()

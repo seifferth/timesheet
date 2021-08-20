@@ -19,13 +19,13 @@ if __name__ == "__main__":
             print(e.context, file=sys.stderr, end="")
         exit(1)
     if sys.argv[1] == "sum":
-        print(print_sum(log))
+        print(print_sum(log), end="")
     elif sys.argv[1] == "hours_only":
-        print(print_hours_only(log))
+        print(print_hours_only(log), end="")
     elif sys.argv[1] == "hours_only_novat":
-        print(print_hours_only_novat(log))
+        print(print_hours_only_novat(log), end="")
     elif sys.argv[1] == "print":
-        print(print_custom(log, sys.argv[2], undefined="undefined"))
+        print(print_custom(log, sys.argv[2], undefined="undefined"), end="")
     elif sys.argv[1] in ("fields"):
         # Print all fields that can be used for format strings
         print('\n'.join(log.get_fields()))
