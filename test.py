@@ -85,6 +85,7 @@ def load_tests(directory: str):
 
 if __name__ == "__main__":
     selection = sys.argv[1:]
+    ok, skip, fail = 0, 0, 0
     for t in load_tests("tests"):
         if selection and t.filename not in selection: continue
         testfilename = t.filename if len(t.filename) < 30 \
@@ -92,12 +93,21 @@ if __name__ == "__main__":
         testname = t.name if len(t.name) < 20 else t.name[:38]+".."
         testname = f'{testfilename+":":<30} {testname:<20}'
         if t.skip:
+            skip += 1
             print(f'>>> {testname:<50}   {"SKIP":>20}')
             continue
         res = run_test(t)
         if res == None:
+            ok += 1
             print(f'>>> {testname:<50}   {"OK":>20}')
         else:
+            fail += 1
             print(f'>>> {testname:<50}   {"FAIL":>20}')
             print(res)
             print()
+    print('\n'.join(['',
+        f'{" ":>51} {  ok:>10}/{ok+skip+fail:<10}   OK',
+        f'{" ":>51} {skip:>10}/{ok+skip+fail:<10} SKIP',
+        f'{" ":>51} {fail:>10}/{ok+skip+fail:<10} FAIL',
+    ]))
+    exit(0 if fail == 0 else 1)
