@@ -9,11 +9,11 @@ def dot_total(total: str) -> str:
            len(total[total.find("  ")+1:total.rfind("  ")+1]) * '.' + \
            total[total.rfind("  ")+1:]
 
-def print_sum(log: Log) -> str:
+def print_sum(sheet: Sheet) -> str:
     lines = list()
     grand_total = Decimal(0)
     daily_rows: dict[str,list] = dict()
-    for row in log.select(["date", "task", "desc", "time"], undefined=""):
+    for row in sheet.select(["date", "task", "desc", "time"], undefined=""):
         if row["date"] not in daily_rows.keys():
             daily_rows[row["date"]] = list()
         daily_rows[row["date"]].append({ k: v for k, v in row.items()
@@ -37,20 +37,20 @@ def print_sum(log: Log) -> str:
     )
     return '\n'.join(lines)+'\n'
 
-def print_custom(log: Log, format: str, undefined: str="undefined") -> str:
+def print_custom(sheet: Sheet, format: str, undefined: str="undefined") -> str:
     lines = list()
     format = format.replace("{time}", "{time:.2f}") # Set default time format
     fields = set(re.findall(r'{([^}:]*)[}:]', format))
-    for linedict in log.select(fields):
+    for linedict in sheet.select(fields):
         lines.append(format.format(**linedict))
     return '\n'.join(lines)+'\n'
 
-def print_hours_only(log: Log) -> str:
+def print_hours_only(sheet: Sheet) -> str:
     result = StringIO()
     total_time, total_net, total_gross = Decimal(0), Decimal(0), Decimal(0)
     w = csv.writer(result, lineterminator="\n")
     w.writerow(["Date","Description","Rate","Hours","Net","VAT","Gross"])
-    for row in log.select(["date","desc","rate","time","vat"], undefined=""):
+    for row in sheet.select(["date","desc","rate","time","vat"], undefined=""):
         rate = Decimal(row["rate"])
         vat = Decimal(row["vat"])
         net = row["time"] * rate
@@ -62,12 +62,12 @@ def print_hours_only(log: Log) -> str:
                 f'{total_gross:.2f}'])
     result.seek(0); return result.read()
 
-def print_hours_only_novat(log: Log) -> str:
+def print_hours_only_novat(sheet: Sheet) -> str:
     result = StringIO()
     total_time, total_net = Decimal(0), Decimal(0)
     w = csv.writer(result, lineterminator="\n")
     w.writerow(["Date","Description","Rate","Hours","Price"])
-    for row in log.select(["date","desc","rate","time"], undefined=""):
+    for row in sheet.select(["date","desc","rate","time"], undefined=""):
         rate = Decimal(row["rate"])
         net = row["time"] * rate
         total_time += row["time"]; total_net += net
@@ -76,11 +76,11 @@ def print_hours_only_novat(log: Log) -> str:
     w.writerow(["Total","","",f'{total_time:.2f}',f'{total_net:.2f}'])
     result.seek(0); return result.read()
 
-def print_csv(log: Log, fields: list[str]) -> str:
+def print_csv(sheet: Sheet, fields: list[str]) -> str:
     result = StringIO()
     w = csv.writer(result, lineterminator="\n")
     w.writerow(fields)
-    for row in log.select(fields, undefined=""):
+    for row in sheet.select(fields, undefined=""):
         if "time" in row.keys(): row["time"] = f'{row["time"]:.2f}'
         w.writerow([ row[f] for f in fields ])
     result.seek(0); return result.read()

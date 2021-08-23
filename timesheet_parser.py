@@ -4,7 +4,7 @@ import re, sys
 from decimal import Decimal
 from timesheet_types import *
 
-def parse_day(date: str, lines: list[str], log: Log) -> None:
+def parse_day(date: str, lines: list[str], sheet: Sheet) -> None:
     global_start: Time = None
     start: EntryStartPoint = None
     for lno, l in enumerate(lines):
@@ -23,7 +23,7 @@ def parse_day(date: str, lines: list[str], log: Log) -> None:
                     "Cannot stop time entry without starting it first"
                 )
                 # TODO: Use global start for double-checking
-                log.add_entry(Entry(start, time))
+                sheet.add_entry(Entry(start, time))
                 global_start = None
                 start = None
             elif entry_type == "start" and l == None:
@@ -36,10 +36,10 @@ def parse_day(date: str, lines: list[str], log: Log) -> None:
             elif entry_type == "start":
                 if global_start == None: global_start = time
                 if start != None:
-                    log.add_entry(Entry(start, time))
+                    sheet.add_entry(Entry(start, time))
                 task, *l = l.split(maxsplit=1)
                 l = None if len(l) == 0 else l[0]
-                if task not in log.tasks.keys():
+                if task not in sheet.tasks.keys():
                     raise ParseError(lno,
                         f'Task {taskname} referenced before asignment'
                     )
@@ -55,7 +55,7 @@ def parse_day(date: str, lines: list[str], log: Log) -> None:
                     f"Unknown time entry type '{entry_type}'"
                 )
 
-def parse_task(lines: list[str], log: Log) -> None:
+def parse_task(lines: list[str], sheet: Sheet) -> None:
     name, *l = lines[0].split(maxsplit=1)
     t = Task(name)
     for l in l + lines[1:]:
@@ -65,27 +65,27 @@ def parse_task(lines: list[str], log: Log) -> None:
             )
         key, val = re.split(r'\s*=\s*', l, maxsplit=1)
         t.set(key, val)
-    log.add_task(t)
+    sheet.add_task(t)
 
-def parse_default(lines: list[str], log: Log) -> None:
+def parse_default(lines: list[str], sheet: Sheet) -> None:
     for l in lines:
         key, val = re.split(r'\s*=\s', l, maxsplit=1)
-        log.set_default(key, val)
+        sheet.set_default(key, val)
 
-def strip_comments(log: str) -> str:
+def strip_comments(sheet: str) -> str:
     """Strips comments and trailing whitespace"""
-    log = re.sub(r'^#.*$', '', log, flags=re.M)
-    log = re.sub(r'\s+#.*$', '', log, flags=re.M)
-    log = re.sub(r'^\s+$', '', log, flags=re.M)
-    return log
+    sheet = re.sub(r'^#.*$', '', sheet, flags=re.M)
+    sheet = re.sub(r'\s+#.*$', '', sheet, flags=re.M)
+    sheet = re.sub(r'^\s+$', '', sheet, flags=re.M)
+    return sheet
 
 def starts_blank(line: str) -> bool:
     return bool(re.match(r'^\s', line, flags=re.M))
     #return bool(line[0].strip())
 
-def parse(log: str) -> Log:
-    res = Log()
-    lines: list[str] = strip_comments(log).splitlines()
+def parse(sheet: str) -> Sheet:
+    res = Sheet()
+    lines: list[str] = strip_comments(sheet).splitlines()
     i: int = 0
     try:
         while i < len(lines):
@@ -114,7 +114,7 @@ def parse(log: str) -> Log:
             elif re.match(r'^[0-9]', entry_type):
                 if not re.match(r'^[0-9]{4}-[0-9]{2}-[0-9]{2}$', entry_type):
                     raise ParseError(0, f"Cannot parse date '{entry_type}'")
-                parse_day(date=entry_type, lines=ls, log=res)
+                parse_day(date=entry_type, lines=ls, sheet=res)
             else:
                 raise ParseError(0, f"Unknown entry type '{entry_type}'")
             i=j; continue

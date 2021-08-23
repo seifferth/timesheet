@@ -56,7 +56,7 @@ class Entry:
         self.stop: Time = stop
         self.time: Decimal = self.stop.decimal() - self.start.decimal()
 
-class Log:
+class Sheet:
     def __init__(self):
         self.tasks: dict[str,Task] = dict()
         self.defaults: dict[str,str] = dict()
