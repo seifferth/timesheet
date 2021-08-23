@@ -12,16 +12,19 @@ def dot_total(total: str) -> str:
 def print_sum(log: Log) -> str:
     lines = list()
     grand_total = Decimal(0)
-    for date in sorted(log.get_days()):
+    daily_rows: dict[str,list] = dict()
+    for row in log.select(["date", "task", "desc", "time"], undefined=""):
+        if row["date"] not in daily_rows.keys():
+            daily_rows[row["date"]] = list()
+        daily_rows[row["date"]].append({ k: v for k, v in row.items()
+                                              if k != "date" })
+    for date in sorted(daily_rows.keys()):
         daily_total = Decimal(0)
         lines.append(date)
-        entries: dict[str,Decimal] = dict()
-        for task, time in log.get_times(begin=date, end=date+"a"):
+        for row in daily_rows[date]:
+            time = row["time"]
             daily_total += time; grand_total += time
-            desc = f'{task.name} {task.get("desc")}'
-            if desc not in entries: entries[desc] = Decimal(0)
-            entries[desc] += time
-        for desc, time in entries.items():
+            desc = f'{row["task"]} {row["desc"]}'
             if len(desc) > 57: desc = desc[:55]+".."
             lines.append(
                 f'    {desc[:57]:<57} {time:>5.2f}'

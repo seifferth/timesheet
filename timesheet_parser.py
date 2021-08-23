@@ -6,11 +6,11 @@ from timesheet_types import *
 
 def parse_day(date: str, lines: list[str], log: Log) -> None:
     global_start: Time = None
-    last_start: Time = None
+    start: EntryStartPoint = None
     for lno, l in enumerate(lines):
         if re.match(r'^[^0-9\s]', l):       # Attribute line
-            raise ParseError(lno, 'Continuation lines for time level '\
-                              'overrides are not implemented yet')
+            key, val = re.split(r'\s*=\s', l, maxsplit=1)
+            start.attrs[key] = val
         elif re.match(r'^[0-9]', l):        # Time entry
             try:
                 time, entry_type, *l = l.split(maxsplit=2)
@@ -23,9 +23,9 @@ def parse_day(date: str, lines: list[str], log: Log) -> None:
                     "Cannot stop time entry without starting it first"
                 )
                 # TODO: Use global start for double-checking
-                log.add_time(task, time.decimal() - last_start.decimal())
+                log.add_entry(Entry(start, time))
                 global_start = None
-                last_start = None
+                start = None
             elif entry_type == "start" and l == None:
                 if not global_start == None: raise ParseError(lno,
                     "Cannot create an initial start time without stopping "\
@@ -35,19 +35,21 @@ def parse_day(date: str, lines: list[str], log: Log) -> None:
                 continue
             elif entry_type == "start":
                 if global_start == None: global_start = time
-                if last_start != None:
-                    log.add_time(task, time.decimal() - last_start.decimal())
+                if start != None:
+                    log.add_entry(Entry(start, time))
                 task, *l = l.split(maxsplit=1)
                 l = None if len(l) == 0 else l[0]
+                if task not in log.tasks.keys():
+                    raise ParseError(lno,
+                        f'Task {taskname} referenced before asignment'
+                    )
                 try:
-                    task = log.get_task(task).copy(date=date)
+                    start = EntryStartPoint(task=task, date=date, start=time)
                 except ParseError as e:
                     raise ParseError(lno, e.msg)
                 if l:       # TODO: Add support for multiple overrides
                     key, val = re.split(r'\s*=\s', l, maxsplit=1)
-                    task = task.copy(date=date)
-                    task.attrs[key] = val
-                last_start = time
+                    start.attrs[key] = val
             else:
                 raise ParseError(lno,
                     f"Unknown time entry type '{entry_type}'"
