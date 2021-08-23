@@ -54,9 +54,9 @@ def parse_day(date: str, lines: list[str], log: Log) -> None:
                 )
 
 def parse_task(lines: list[str], log: Log) -> None:
-    name, l = lines[0].split(maxsplit=1)
+    name, *l = lines[0].split(maxsplit=1)
     t = Task(name)
-    for l in [l, *lines[1:]]:
+    for l in l + lines[1:]:
         if not "=" in l:
             raise ParseError(0,
                 f"Expected task attribute of form 'name = val' but found '{l}'"
