@@ -65,7 +65,7 @@ class Entry:
                 f"The time entry for task '{self.task}' is zero"
             )
         elif self.time < 0:
-            warn(self.lno,
+            parser_warning(self.lno,
                 f"The time entry for task '{self.task}' is negative: "\
                 f"'{self.time}' hours"
             )
