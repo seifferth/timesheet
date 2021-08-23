@@ -4,7 +4,8 @@ import re, sys
 from decimal import Decimal
 from timesheet_types import *
 
-def parse_day(date: str, lines: list[str], sheet: Sheet) -> None:
+def parse_day(lno_offset: int, date: str, lines: list[str], sheet: Sheet) \
+            -> None:
     global_start: Time = None
     start: EntryStartPoint = None
     for lno, l in enumerate(lines):
@@ -15,11 +16,11 @@ def parse_day(date: str, lines: list[str], sheet: Sheet) -> None:
             try:
                 time, entry_type, *l = l.split(maxsplit=2)
             except:
-                raise ParseError(lno, 'Unable to parse time entry')
-            time = Time(lno, time)
+                raise ParseError(lno_offset+lno, 'Unable to parse time entry')
+            time = Time(lno_offset+lno, time)
             l = None if len(l) == 0 else l[0]
             if entry_type == "stop":
-                if global_start == None: raise ParseError(lno,
+                if global_start == None: raise ParseError(lno_offset+lno,
                     "Cannot stop time entry without starting it first"
                 )
                 # TODO: Use global start for double-checking
@@ -27,7 +28,7 @@ def parse_day(date: str, lines: list[str], sheet: Sheet) -> None:
                 global_start = None
                 start = None
             elif entry_type == "start" and l == None:
-                if not global_start == None: raise ParseError(lno,
+                if not global_start == None: raise ParseError(lno_offset+lno,
                     "Cannot create an initial start time without stopping "\
                     "the last count first"
                 )
@@ -40,18 +41,18 @@ def parse_day(date: str, lines: list[str], sheet: Sheet) -> None:
                 task, *l = l.split(maxsplit=1)
                 l = None if len(l) == 0 else l[0]
                 if task not in sheet.tasks.keys():
-                    raise ParseError(lno,
+                    raise ParseError(lno_offset+lno,
                         f'Task {taskname} referenced before asignment'
                     )
                 try:
-                    start = EntryStartPoint(lno, task, date, time)
+                    start = EntryStartPoint(lno_offset+lno, task, date, time)
                 except ParseError as e:
-                    raise ParseError(lno, e.msg)
+                    raise ParseError(lno_offset+lno, e.msg)
                 if l:       # TODO: Add support for multiple overrides
                     key, val = re.split(r'\s*=\s', l, maxsplit=1)
                     start.attrs[key] = val
             else:
-                raise ParseError(lno,
+                raise ParseError(lno_offset+lno,
                     f"Unknown time entry type '{entry_type}'"
                 )
 
@@ -114,13 +115,13 @@ def parse(sheet: str) -> Sheet:
             elif re.match(r'^[0-9]', entry_type):
                 if not re.match(r'^[0-9]{4}-[0-9]{2}-[0-9]{2}$', entry_type):
                     raise ParseError(0, f"Cannot parse date '{entry_type}'")
-                parse_day(date=entry_type, lines=ls, sheet=res)
+                parse_day(i, date=entry_type, lines=ls, sheet=res)
             else:
                 raise ParseError(0, f"Unknown entry type '{entry_type}'")
             i=j; continue
         return res
     except ParseError as e:
-        lno = e.line+i+1
+        lno = e.line+1
         pre = lines[max(0,lno-2):lno]
         if pre: pre = list(map(lambda x: f'  | {x}', pre))
         post = lines[min(len(lines),lno+1):min(len(lines),lno+4)]

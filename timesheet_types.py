@@ -21,7 +21,7 @@ class Task:
         self.attrs: dict[str,str] = dict()
     def set(self, key: str, val: str):
         if key in self.attrs.keys() and val != self.attrs[key]:
-            raise ParseError(0,
+            raise ParseError(self.lno,
                 f"Cannot set task {key} to '{val}', because it has "\
                 f"already been set to '{self.attrs[key]}' earlier"
             )
@@ -35,7 +35,7 @@ class Time:
             h, m = time.split(":", 1)
             self.__value = (Decimal(h)*60 + Decimal(m))/60
         except Exception as e:
-            raise ParseError(0, f"Could not parse time '{time}'")
+            raise ParseError(self.lno, f"Could not parse time '{time}'")
     def decimal(self):
         """Time in minutes since midnight"""
         return self.__value
@@ -47,7 +47,7 @@ class EntryStartPoint:
         self.start: Time = start
         self.attrs: dict[str,str] = dict()
         if not re.match(r'^[0-9]{4}-[0-9]{2}-[0-9]{2}$', date):
-            raise ParseError(0, f"Cannot parse date '{date}'")
+            raise ParseError(self.lno, f"Cannot parse date '{date}'")
         self.date: str = date
         self.year, self.month, self.day = date.split("-")
 class Entry:
@@ -77,7 +77,7 @@ class Sheet:
         self.entries: list[Entry] = list()
     def set_default(self, key, val):
         if key in self.defaults.keys() and val != self.defaults[key]:
-            raise ParseError(0,
+            raise ParseError(self.lno,
                 f"Cannot set default {key} to '{val}', because it has "\
                 f"already been set to '{self.defaults[key]}' earlier"
             )
@@ -86,7 +86,9 @@ class Sheet:
         return self.defaults.get(key)
     def add_task(self, task: Task):
         if task.name in self.tasks.keys():
-            raise ParseError(0, f"Task '{task.name}' was already defined")
+            raise ParseError(self.lno,
+                f"Task '{task.name}' was already defined"
+            )
         self.tasks[task.name] = task
     def add_entry(self, entry: Entry) -> None:
         self.entries.append(entry)
