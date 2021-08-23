@@ -2,6 +2,7 @@
 
 import re
 from decimal import Decimal
+from timesheet_misc import parser_warning
 
 class ParseError(Exception):
     def __init__(self, line: int, msg: str, context=None):
@@ -14,7 +15,8 @@ class ValidationError(Exception):
     pass
 
 class Task:
-    def __init__(self, name: str):
+    def __init__(self, lno: int, name: str):
+        self.lno: int = lno
         self.name: str = name
         self.attrs: dict[str,str] = dict()
     def set(self, key: str, val: str):
@@ -26,7 +28,8 @@ class Task:
         self.attrs[key] = val
 
 class Time:
-    def __init__(self, time: str):
+    def __init__(self, lno: int, time: str):
+        self.lno = lno
         self.string = time
         try:
             h, m = time.split(":", 1)
@@ -38,7 +41,8 @@ class Time:
         return self.__value
 
 class EntryStartPoint:
-    def __init__(self, task: str, date: str, start: Time):
+    def __init__(self, lno: int, task: str, date: str, start: Time):
+        self.lno: int = lno
         self.task: str = task
         self.start: Time = start
         self.attrs: dict[str,str] = dict()
@@ -48,6 +52,7 @@ class EntryStartPoint:
         self.year, self.month, self.day = date.split("-")
 class Entry:
     def __init__(self, start: EntryStartPoint, stop: Time):
+        self.lno: int = start.lno
         self.task: str = start.task
         self.start: Time = start.start
         self.attrs: dict[str,str] = start.attrs
@@ -55,6 +60,15 @@ class Entry:
         self.year, self.month, self.day = start.year, start.month, start.day
         self.stop: Time = stop
         self.time: Decimal = self.stop.decimal() - self.start.decimal()
+        if self.time == 0:
+            parser_warning(self.lno,
+                f"The time entry for task '{self.task}' is zero"
+            )
+        elif self.time < 0:
+            warn(self.lno,
+                f"The time entry for task '{self.task}' is negative: "\
+                f"'{self.time}' hours"
+            )
 
 class Sheet:
     def __init__(self):

@@ -16,7 +16,7 @@ def parse_day(date: str, lines: list[str], sheet: Sheet) -> None:
                 time, entry_type, *l = l.split(maxsplit=2)
             except:
                 raise ParseError(lno, 'Unable to parse time entry')
-            time = Time(time)
+            time = Time(lno, time)
             l = None if len(l) == 0 else l[0]
             if entry_type == "stop":
                 if global_start == None: raise ParseError(lno,
@@ -44,7 +44,7 @@ def parse_day(date: str, lines: list[str], sheet: Sheet) -> None:
                         f'Task {taskname} referenced before asignment'
                     )
                 try:
-                    start = EntryStartPoint(task=task, date=date, start=time)
+                    start = EntryStartPoint(lno, task, date, time)
                 except ParseError as e:
                     raise ParseError(lno, e.msg)
                 if l:       # TODO: Add support for multiple overrides
@@ -55,9 +55,9 @@ def parse_day(date: str, lines: list[str], sheet: Sheet) -> None:
                     f"Unknown time entry type '{entry_type}'"
                 )
 
-def parse_task(lines: list[str], sheet: Sheet) -> None:
+def parse_task(lno: int, lines: list[str], sheet: Sheet) -> None:
     name, *l = lines[0].split(maxsplit=1)
-    t = Task(name)
+    t = Task(lno, name)
     for l in l + lines[1:]:
         if not "=" in l:
             raise ParseError(0,
@@ -110,7 +110,7 @@ def parse(sheet: str) -> Sheet:
             if entry_type == "default":
                 parse_default(ls, res)
             elif entry_type == "task":
-                parse_task(ls, res)
+                parse_task(i, ls, res)
             elif re.match(r'^[0-9]', entry_type):
                 if not re.match(r'^[0-9]{4}-[0-9]{2}-[0-9]{2}$', entry_type):
                     raise ParseError(0, f"Cannot parse date '{entry_type}'")
