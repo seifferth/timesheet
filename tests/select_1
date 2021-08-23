@@ -1,0 +1,170 @@
+>>> comment = Basic hello world select
+>>> args = select date,start,stop,time
+>>> code = 0
+>>> stdin >>>
+# Some stuff here
+task something desc = Hello World task
+2021-01-01
+    10:00 start something
+    11:00 stop
+>>> stdout >>>
+date,start,stop,time
+2021-01-01,10:00,11:00,1.00
+>>> stderr >>>
+--------------------------------------8<--------------------------------------
+>>> args = select date,start,stop,time,desc
+>>> code = 0
+>>> stdin >>>
+# Some stuff here
+task something desc = Hello World task
+2021-01-01
+    10:00 start something
+    11:00 start something
+    12:00 stop
+>>> stdout >>>
+date,start,stop,time,desc
+2021-01-01,10:00,11:00,1.00,Hello World task
+2021-01-01,11:00,12:00,1.00,Hello World task
+>>> stderr >>>
+--------------------------------------8<--------------------------------------
+>>> args = select date,start,stop,time,desc
+>>> code = 0
+>>> stdin >>>
+# Some stuff here
+task something desc = Hello World task
+2021-01-01
+    10:00 start something desc = First line override
+    11:00 start something
+    12:00 stop
+>>> stdout >>>
+date,start,stop,time,desc
+2021-01-01,10:00,11:00,1.00,First line override
+2021-01-01,11:00,12:00,1.00,Hello World task
+>>> stderr >>>
+--------------------------------------8<--------------------------------------
+>>> args = select date,start,stop,time,desc
+>>> code = 0
+>>> stdin >>>
+# Some stuff here
+task something desc = Hello World task
+2021-01-01
+    10:00 start something
+                            desc = First line override
+    11:00 start something
+    12:00 stop
+>>> stdout >>>
+date,start,stop,time,desc
+2021-01-01,10:00,11:00,1.00,First line override
+2021-01-01,11:00,12:00,1.00,Hello World task
+>>> stderr >>>
+--------------------------------------8<--------------------------------------
+>>> args = select date,start,stop,time,desc
+>>> code = 0
+>>> stdin >>>
+# Some stuff here
+task something desc = Hello World task
+2021-01-01
+    10:00 start something
+    11:00 start something desc = Second line override
+    12:00 stop
+>>> stdout >>>
+date,start,stop,time,desc
+2021-01-01,10:00,11:00,1.00,Hello World task
+2021-01-01,11:00,12:00,1.00,Second line override
+>>> stderr >>>
+--------------------------------------8<--------------------------------------
+>>> args = select date,start,stop,time,desc,note
+>>> code = 0
+>>> stdin >>>
+# Some stuff here
+task something
+    desc = Hello World task
+    note = Something note
+2021-01-01
+    10:00 start something
+    11:00 start something desc = Second line override
+    12:00 stop
+>>> stdout >>>
+date,start,stop,time,desc,note
+2021-01-01,10:00,11:00,1.00,Hello World task,Something note
+2021-01-01,11:00,12:00,1.00,Second line override,Something note
+>>> stderr >>>
+--------------------------------------8<--------------------------------------
+>>> args = select date,start,stop,time,desc,note
+>>> code = 0
+>>> stdin >>>
+# Some stuff here
+task something
+    desc = Hello World task
+    note = Something note
+2021-01-01
+    10:00 start something
+    11:00 start something desc = Second line override
+                          note = Second line note
+    12:00 stop
+>>> stdout >>>
+date,start,stop,time,desc,note
+2021-01-01,10:00,11:00,1.00,Hello World task,Something note
+2021-01-01,11:00,12:00,1.00,Second line override,Second line note
+>>> stderr >>>
+--------------------------------------8<--------------------------------------
+>>> args = select date,start,stop,time,desc,note
+>>> code = 0
+>>> stdin >>>
+# Some stuff here
+task something
+    desc = Hello World task
+    note = Something note
+2021-01-01
+    10:00 start something
+    11:00 start something
+                    desc = Second line override
+                    note = Second line note
+    12:00 stop
+>>> stdout >>>
+date,start,stop,time,desc,note
+2021-01-01,10:00,11:00,1.00,Hello World task,Something note
+2021-01-01,11:00,12:00,1.00,Second line override,Second line note
+>>> stderr >>>
+--------------------------------------8<--------------------------------------
+>>> args = select date,start,stop,time,desc,note
+>>> code = 0
+>>> stdin >>>
+# Some stuff here
+task something
+    desc = Hello World task
+    note = Something note
+2021-01-01
+    10:00 start something
+    11:00 start something
+                    desc = Second line override
+                    note = Second line note
+    11:40 start something
+    12:00 stop
+>>> stdout >>>
+date,start,stop,time,desc,note
+2021-01-01,10:00,11:00,1.00,Hello World task,Something note
+2021-01-01,11:00,11:40,0.67,Second line override,Second line note
+2021-01-01,11:40,12:00,0.33,Hello World task,Something note
+>>> stderr >>>
+--------------------------------------8<--------------------------------------
+>>> args = select date,time,desc,note
+>>> code = 0
+>>> stdin >>>
+# Some stuff here
+task something
+    desc = Hello World task
+    note = Something note
+2021-01-01
+    10:00 start something
+    11:00 start something
+                    desc = Second line override
+                    note = Second line note
+    11:40 start something
+    12:00 stop
+>>> stdout >>>
+date,time,desc,note
+2021-01-01,1.33,Hello World task,Something note
+2021-01-01,0.67,Second line override,Second line note
+>>> stderr >>>
+--------------------------------------8<--------------------------------------
