@@ -42,7 +42,7 @@ def parse_day(lno_offset: int, date: str, lines: list[str], sheet: Sheet) \
                 l = None if len(l) == 0 else l[0]
                 if task not in sheet.tasks.keys():
                     raise ParseError(lno_offset+lno,
-                        f'Task {taskname} referenced before asignment'
+                        f'Task {task} referenced before asignment'
                     )
                 try:
                     start = EntryStartPoint(lno_offset+lno, task, date, time)
