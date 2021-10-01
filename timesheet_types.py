@@ -86,8 +86,11 @@ class Sheet:
         return self.defaults.get(key)
     def add_task(self, task: Task):
         if task.name in self.tasks.keys():
+            known = self.tasks.get(task.name)
+            if task.attrs == known.attrs: return
             raise ParseError(0,
-                f"Task '{task.name}' was already defined"
+                f"Task '{task.name}' was already defined with different "\
+                f"attributes on line {known.lno}"
             )
         self.tasks[task.name] = task
     def add_entry(self, entry: Entry) -> None:
