@@ -77,7 +77,7 @@ class Sheet:
         self.entries: list[Entry] = list()
     def set_default(self, key, val):
         if key in self.defaults.keys() and val != self.defaults[key]:
-            raise ParseError(self.lno,
+            raise ParseError(0,
                 f"Cannot set default {key} to '{val}', because it has "\
                 f"already been set to '{self.defaults[key]}' earlier"
             )
@@ -86,7 +86,7 @@ class Sheet:
         return self.defaults.get(key)
     def add_task(self, task: Task):
         if task.name in self.tasks.keys():
-            raise ParseError(self.lno,
+            raise ParseError(0,
                 f"Task '{task.name}' was already defined"
             )
         self.tasks[task.name] = task
