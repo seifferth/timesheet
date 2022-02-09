@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import re, sys
-from decimal import Decimal
 from timesheet_types import *
 
 def parse_day(lno_offset: int, date: str, lines: list[str], sheet: Sheet) \
