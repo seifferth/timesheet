@@ -33,7 +33,7 @@ class Time:
         self.string = time
         try:
             h, m = time.split(":", 1)
-            self.__value = (Decimal(h)*60 + Decimal(m))/60
+            self.__value = (Decimal(h)*60 + Decimal(m))
         except Exception as e:
             raise ParseError(self.lno, f"Could not parse time '{time}'")
     def decimal(self):
@@ -59,15 +59,15 @@ class Entry:
         self.date: str = start.date
         self.year, self.month, self.day = start.year, start.month, start.day
         self.stop: Time = stop
-        self.time: Decimal = self.stop.decimal() - self.start.decimal()
-        if self.time == 0:
+        self.minutes: Decimal = self.stop.decimal() - self.start.decimal()
+        if self.minutes == 0:
             parser_warning(self.lno,
                 f"The time entry for task '{self.task}' is zero"
             )
-        elif self.time < 0:
+        elif self.minutes < 0:
             parser_warning(self.lno,
                 f"The time entry for task '{self.task}' is negative: "\
-                f"'{self.time}' hours"
+                f"'{self.time/60:.2f}' hours"
             )
 
 class Sheet:
@@ -130,9 +130,11 @@ class Sheet:
                 else:                   linedict[f] = undefined
             key = str([ (f, linedict[f]) for f in keyfields ])
             if key not in lines.keys(): lines[key] = (linedict, Decimal(0))
-            lines[key] = (lines[key][0], lines[key][1] + entry.time)
+            lines[key] = (lines[key][0], lines[key][1] + entry.minutes)
         result = list()
-        for linedict, time in lines.values():
-            linedict["time"] = time
+        for linedict, minutes in lines.values():
+            linedict["minutes"] = minutes
+            linedict["hours"] = minutes/60
+            linedict["time"] = linedict["hours"]
             result.append(linedict)
         return result
