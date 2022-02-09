@@ -94,20 +94,20 @@ if __name__ == "__main__":
         testname = f'{testfilename+":":<30} {testname:<20}'
         if t.skip:
             skip += 1
-            print(f'>>> {testname:<50}   {"SKIP":>20}')
+            print(f'>>> {testname:<50}   {"SKIP":>19}')
             continue
         res = run_test(t)
         if res == None:
             ok += 1
-            print(f'>>> {testname:<50}   {"OK":>20}')
+            print(f'>>> {testname:<50}   {"OK":>19}')
         else:
             fail += 1
-            print(f'>>> {testname:<50}   {"FAIL":>20}')
+            print(f'>>> {testname:<50}   {"FAIL":>19}')
             print(res)
             print()
     print('\n'.join(['',
-        f'{" ":>51} {  ok:>10}/{ok+skip+fail:<10}   OK',
-        f'{" ":>51} {skip:>10}/{ok+skip+fail:<10} SKIP',
-        f'{" ":>51} {fail:>10}/{ok+skip+fail:<10} FAIL',
+        f'{" ":>50} {  ok:>10}/{ok+skip+fail:<10}   OK',
+        f'{" ":>50} {skip:>10}/{ok+skip+fail:<10} SKIP',
+        f'{" ":>50} {fail:>10}/{ok+skip+fail:<10} FAIL',
     ]))
     exit(0 if fail == 0 else 1)
