@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
 import sys
-from timesheet_types import *
-from timesheet_parser import parse
-from timesheet_printer import \
+from common_types import *
+from parser import parse
+from printer import \
     print_sum, print_hours_only, print_hours_only_novat, print_custom, \
     print_csv
-from timesheet_misc import parser_error
+from misc import parser_error
 
 if __name__ == "__main__":
     try:

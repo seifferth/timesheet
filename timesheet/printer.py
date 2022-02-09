@@ -2,7 +2,7 @@
 
 import re, csv
 from io import StringIO
-from timesheet_types import *
+from common_types import *
 
 def dot_total(total: str) -> str:
     return total[:total.find("  ")+1] + \
