@@ -74,10 +74,9 @@ def parse_default(lines: list[str], sheet: Sheet) -> None:
         sheet.set_default(key, val)
 
 def strip_comments(sheet: str) -> str:
-    """Strips comments and trailing whitespace"""
+    """Strips comments"""
     sheet = re.sub(r'^#.*$', '', sheet, flags=re.M)
     sheet = re.sub(r'\s+#.*$', '', sheet, flags=re.M)
-    sheet = re.sub(r'^\s+$', '', sheet, flags=re.M)
     return sheet
 
 def starts_blank(line: str) -> bool:
