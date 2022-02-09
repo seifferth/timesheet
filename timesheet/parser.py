@@ -9,7 +9,7 @@ def parse_day(lno_offset: int, date: str, lines: list[str], sheet: Sheet) \
     start: EntryStartPoint = None
     for lno, l in enumerate(lines):
         if re.match(r'^[^0-9\s]', l):       # Attribute line
-            key, val = re.split(r'\s*=\s', l, maxsplit=1)
+            key, val = re.split(r'\s*=\s*', l, maxsplit=1)
             start.attrs[key] = val
         elif re.match(r'^[0-9]', l):        # Time entry
             try:
@@ -44,7 +44,7 @@ def parse_day(lno_offset: int, date: str, lines: list[str], sheet: Sheet) \
                 except ParseError as e:
                     raise ParseError(lno_offset+lno, e.msg)
                 if l:
-                    key, val = re.split(r'\s*=\s', l, maxsplit=1)
+                    key, val = re.split(r'\s*=\s*', l, maxsplit=1)
                     start.attrs[key] = val
             else:
                 raise ParseError(lno_offset+lno,
@@ -67,7 +67,7 @@ def parse_task(lno: int, lines: list[str], sheet: Sheet) -> None:
 def parse_default(lines: list[str], sheet: Sheet) -> None:
     for l in lines:
         if not l.strip(): continue
-        key, val = re.split(r'\s*=\s', l, maxsplit=1)
+        key, val = re.split(r'\s*=\s*', l, maxsplit=1)
         sheet.set_default(key, val)
 
 def strip_comments(sheet: str) -> str:
