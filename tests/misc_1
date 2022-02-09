@@ -25,8 +25,7 @@ task something desc = Hello World \
 2021-01-01
     10:00 start something
     11:00 stop
-    13:00 start
-        13:00 start something
+    13:00 start something
     13:30 stop
 >>> stdout >>>
 2021-01-01
@@ -46,8 +45,7 @@ task something desc = Hello World \
 2021-01-01
     10:00 start something
     11:00 stop
-    13:00 start
-        13:00 start something
+    13:00 start something
     13:30 stop
 >>> stdout >>>
 2021-01-01
