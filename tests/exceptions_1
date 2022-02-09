@@ -116,3 +116,16 @@ Error while parsing line 7: Cannot stop time entry without starting it first
   >     11:00 stop
   |     11:00 start something
 --------------------------------------8<--------------------------------------
+>>> args = sum
+>>> code = 1
+>>> stdin >>>
+task something desc = Hello World task
+2021-01-01
+    11:00 start
+>>> stdout >>>
+>>> stderr >>>
+Error while parsing line 3: Cannot start time entry without specifying a task
+  | task something desc = Hello World task
+  | 2021-01-01
+  >     11:00 start
+--------------------------------------8<--------------------------------------
