@@ -45,37 +45,6 @@ def print_custom(sheet: Sheet, format: str, undefined: str="undefined") -> str:
         lines.append(format.format(**linedict))
     return '\n'.join(lines)+'\n'
 
-def print_hours_only(sheet: Sheet) -> str:
-    result = StringIO()
-    total_time, total_net, total_gross = Decimal(0), Decimal(0), Decimal(0)
-    w = csv.writer(result, lineterminator="\n")
-    w.writerow(["Date","Description","Rate","Hours","Net","VAT","Gross"])
-    for row in sheet.select(["date","desc","rate","time","vat"], undefined=""):
-        rate = Decimal(row["rate"])
-        vat = Decimal(row["vat"])
-        net = row["time"] * rate
-        gross = net + net * vat
-        total_time += row["time"]; total_net += net; total_gross += gross
-        w.writerow([row["date"],row["desc"],row["rate"],f'{row["time"]:.2f}',
-                    f'{net:.2f}',row["vat"],f'{gross:.2f}'])
-    w.writerow(["Total","","",f'{total_time:.2f}',f'{total_net:.2f}',"",
-                f'{total_gross:.2f}'])
-    result.seek(0); return result.read()
-
-def print_hours_only_novat(sheet: Sheet) -> str:
-    result = StringIO()
-    total_time, total_net = Decimal(0), Decimal(0)
-    w = csv.writer(result, lineterminator="\n")
-    w.writerow(["Date","Description","Rate","Hours","Price"])
-    for row in sheet.select(["date","desc","rate","time"], undefined=""):
-        rate = Decimal(row["rate"])
-        net = row["time"] * rate
-        total_time += row["time"]; total_net += net
-        w.writerow([row["date"],row["desc"],row["rate"],f'{row["time"]:.2f}',
-                    f'{net:.2f}'])
-    w.writerow(["Total","","",f'{total_time:.2f}',f'{total_net:.2f}'])
-    result.seek(0); return result.read()
-
 def print_csv(sheet: Sheet, fields: list[str]) -> str:
     result = StringIO()
     w = csv.writer(result, lineterminator="\n")
