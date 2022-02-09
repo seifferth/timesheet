@@ -1,0 +1,45 @@
+>>> args = sum
+>>> code = 0
+>>> stdin >>>
+# Some stuff here
+task something
+
+default
+    desc = No description provided
+
+
+2021-01-01
+    10:00 start something
+    11:00 stop
+>>> stdout >>>
+2021-01-01
+    something No description provided                          1.00
+    Total hours .............................................. 1.00
+
+Grand total .................................................. 1.00
+>>> stderr >>>
+--------------------------------------8<--------------------------------------
+>>> args = sum
+>>> code = 0
+>>> stdin >>>
+# Some stuff here
+task something
+
+default
+    desc = No description provided
+task other
+    desc = This one has a description
+
+2021-01-01
+    10:00 start something
+    10:26 start other
+    11:00 stop
+>>> stdout >>>
+2021-01-01
+    something No description provided                          0.43
+    other This one has a description                           0.57
+    Total hours .............................................. 1.00
+
+Grand total .................................................. 1.00
+>>> stderr >>>
+--------------------------------------8<--------------------------------------

@@ -123,3 +123,24 @@ stopping the last count first
   >     11:00 start
   |     11:00 start
 --------------------------------------8<--------------------------------------
+>>> skip = false
+>>> args = sum
+>>> code = 1
+>>> stdin >>>
+# Some initial comment and emptyline
+
+task something desc = Hello World task
+2021-01-01
+    11:00 start
+
+    11:00 start
+    11:00 start
+>>> stdout >>>
+>>> stderr >>>
+Error while parsing line 7: Cannot create an initial start time without
+stopping the last count first
+  |     11:00 start
+  | 
+  >     11:00 start
+  |     11:00 start
+--------------------------------------8<--------------------------------------

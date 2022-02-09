@@ -59,6 +59,7 @@ def parse_task(lno: int, lines: list[str], sheet: Sheet) -> None:
     name, *l = lines[0].split(maxsplit=1)
     t = Task(lno, name)
     for l in l + lines[1:]:
+        if not l.strip(): continue
         if not "=" in l:
             raise ParseError(0,
                 f"Expected task attribute of form 'name = val' but found '{l}'"
@@ -69,6 +70,7 @@ def parse_task(lno: int, lines: list[str], sheet: Sheet) -> None:
 
 def parse_default(lines: list[str], sheet: Sheet) -> None:
     for l in lines:
+        if not l.strip(): continue
         key, val = re.split(r'\s*=\s', l, maxsplit=1)
         sheet.set_default(key, val)
 
@@ -79,8 +81,8 @@ def strip_comments(sheet: str) -> str:
     return sheet
 
 def starts_blank(line: str) -> bool:
-    return bool(re.match(r'^\s', line, flags=re.M))
-    #return bool(line[0].strip())
+    if not line.strip(): return True
+    return bool(re.match(r'^\s', line))
 
 def parse(sheet: str) -> Sheet:
     res = Sheet()
