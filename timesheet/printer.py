@@ -13,7 +13,7 @@ def print_sum(sheet: Sheet) -> str:
     lines = list()
     grand_total = Decimal(0)
     daily_rows: dict[str,list] = dict()
-    for row in sheet.select(["date", "task", "desc", "time"], undefined=""):
+    for row in sheet.select(["date", "task", "desc", "hours"], undefined=""):
         if row["date"] not in daily_rows.keys():
             daily_rows[row["date"]] = list()
         daily_rows[row["date"]].append({ k: v for k, v in row.items()
@@ -22,12 +22,12 @@ def print_sum(sheet: Sheet) -> str:
         daily_total = Decimal(0)
         lines.append(date)
         for row in daily_rows[date]:
-            time = row["time"]
-            daily_total += time; grand_total += time
+            hours = row["hours"]
+            daily_total += hours; grand_total += hours
             desc = f'{row["task"]} {row["desc"]}'
             if len(desc) > 57: desc = desc[:55]+".."
             lines.append(
-                f'    {desc[:57]:<57} {time:>5.2f}'
+                f'    {desc[:57]:<57} {hours:>5.2f}'
             )
         lines.append("    "+dot_total(
             f'Total hours {45*" "} {daily_total:>5.2f}'
@@ -39,7 +39,7 @@ def print_sum(sheet: Sheet) -> str:
 
 def print_custom(sheet: Sheet, format: str, undefined: str="undefined") -> str:
     lines = list()
-    format = format.replace("{time}", "{time:.2f}") # Set default time format
+    format = format.replace("{hours}", "{hours:.2f}") # Set default hours format
     fields = set(re.findall(r'{([^}:]*)[}:]', format))
     for linedict in sheet.select(fields):
         lines.append(format.format(**linedict))
@@ -50,6 +50,6 @@ def print_csv(sheet: Sheet, fields: list[str]) -> str:
     w = csv.writer(result, lineterminator="\n")
     w.writerow(fields)
     for row in sheet.select(fields, undefined=""):
-        if "time" in row.keys(): row["time"] = f'{row["time"]:.2f}'
+        if "hours" in row.keys(): row["hours"] = f'{row["hours"]:.2f}'
         w.writerow([ row[f] for f in fields ])
     result.seek(0); return result.read()

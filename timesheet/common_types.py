@@ -96,7 +96,7 @@ class Sheet:
     def add_entry(self, entry: Entry) -> None:
         self.entries.append(entry)
     def get_fields(self) -> list[str]:
-        attrs = [ "date", "time", "task", "year", "month", "day",
+        attrs = [ "date", "hours", "minutes", "task", "year", "month", "day",
                   "start", "stop" ]
         for k in self.defaults.keys():
             if k not in attrs: attrs.append(k)
@@ -109,7 +109,8 @@ class Sheet:
         return attrs
     def select(self, fields: list[str], undefined="undefined") -> list[dict]:
         lines: dict[tuple[str,Decimal]] = dict()
-        keyfields = sorted([ f for f in fields if f != "time" ])
+        keyfields = sorted([ f for f in fields
+                             if f not in ['hours', 'minutes'] ])
         for entry in self.entries:
             linedict = dict()
             task = self.tasks.get(entry.task)
@@ -135,6 +136,5 @@ class Sheet:
         for linedict, minutes in lines.values():
             linedict["minutes"] = minutes
             linedict["hours"] = minutes/60
-            linedict["time"] = linedict["hours"]
             result.append(linedict)
         return result

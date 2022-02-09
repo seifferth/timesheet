@@ -11,7 +11,7 @@ task something desc = Hello World task
 2021-01-01, 10:00 to 11:00: Hello World task
 >>> stderr >>>
 --------------------------------------8<--------------------------------------
->>> args = print 'On {date} I spent {time} hours on {task}'
+>>> args = print 'On {date} I spent {hours} hours on {task}'
 >>> code = 0
 >>> stdin >>>
 # Some stuff here
@@ -28,7 +28,7 @@ task something
 On 2021-01-01 I spent 2.00 hours on something
 >>> stderr >>>
 --------------------------------------8<--------------------------------------
->>> args = print 'On {date} I spent {time} hours on {desc}'
+>>> args = print 'On {date} I spent {hours} hours on {desc}'
 >>> code = 0
 >>> stdin >>>
 # Some stuff here
@@ -46,7 +46,7 @@ On 2021-01-01 I spent 1.00 hours on Hello World task
 On 2021-01-01 I spent 1.00 hours on Second line override
 >>> stderr >>>
 --------------------------------------8<--------------------------------------
->>> args = print 'On {date} I spent {time} hours on {task} ({note})'
+>>> args = print 'On {date} I spent {hours} hours on {task} ({note})'
 >>> code = 0
 >>> stdin >>>
 # Some stuff here
