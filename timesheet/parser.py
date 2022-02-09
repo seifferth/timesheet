@@ -22,7 +22,6 @@ def parse_day(lno_offset: int, date: str, lines: list[str], sheet: Sheet) \
                 if last_start == None: raise ParseError(lno_offset+lno,
                     "Cannot stop time entry without starting it first"
                 )
-                # TODO: Use global start for double-checking
                 sheet.add_entry(Entry(start, time))
                 last_start = None
                 start = None
