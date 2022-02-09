@@ -43,7 +43,7 @@ def parse_day(lno_offset: int, date: str, lines: list[str], sheet: Sheet) \
                     start = EntryStartPoint(lno_offset+lno, task, date, time)
                 except ParseError as e:
                     raise ParseError(lno_offset+lno, e.msg)
-                if l:       # TODO: Add support for multiple overrides
+                if l:
                     key, val = re.split(r'\s*=\s', l, maxsplit=1)
                     start.attrs[key] = val
             else:

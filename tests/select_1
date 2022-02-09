@@ -318,3 +318,23 @@ date,start,stop,time,desc,note
 2021-01-01,11:47,12:00,0.22,Hello World task,Something note
 >>> stderr >>>
 --------------------------------------8<--------------------------------------
+>>> args = select date,start,stop,time, desc,note
+>>> code = 0
+>>> stdin >>>
+# Some stuff here
+task something
+    desc = Hello World task
+    note = Something note
+2021-01-01
+    10:03 start something
+    11:00 start something desc = Second line override
+                          note = Second line note
+    11:47 start something
+    12:00 stop
+>>> stdout >>>
+date,start,stop,time,desc,note
+2021-01-01,10:03,11:00,0.95,Hello World task,Something note
+2021-01-01,11:00,11:47,0.78,Second line override,Second line note
+2021-01-01,11:47,12:00,0.22,Hello World task,Something note
+>>> stderr >>>
+--------------------------------------8<--------------------------------------
