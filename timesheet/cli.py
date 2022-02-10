@@ -57,15 +57,19 @@ Standard Fields
 """.lstrip()
 
 if __name__ == "__main__":
-    opts, rest = getopt(sys.argv[1:], "hf:", ["help", "file="])
+    all_opts, rest = getopt(sys.argv[1:], "hf:", ["help", "file="])
     short2long = { "-h": "--help", "-f": "--file" }
-    opts = { short2long.get(k, k).lstrip('-'): v for k, v in opts }
-    if 'help' in opts:
+    opts = { short2long.get(k, k).lstrip('-'): v for k, v in all_opts }
+    if "help" in opts:
         print(_cli_help)
         exit(0)
     if len(rest) < 1:
         print("No COMMAND specified for timesheet", file=sys.stderr)
         exit(1)
+    if "file" in opts:
+        opts["file"] = [ v for k, v in all_opts if k in ["-f", "--file"] ]
+    else:
+        opts["file"] = [ "-" ]
     command, args = rest[0], rest[1:]
     if command in ["sum", "fields"] and args:
         print(f"Command '{command}' takes no further arguments",
@@ -74,25 +78,28 @@ if __name__ == "__main__":
     elif command not in ["sum", "fields", "select", "print"]:
         print(f"Unknown command '{command}'", file=sys.stderr)
         exit(1)
-    try:
-        if opts.get("file", "-") == "-":
-            sheet: Sheet = parse(sys.stdin.read())
-        else:
-            with open(opts.get("file")) as f:
-                sheet: Sheet = parse(f.read())
-    except ParseError as e:
-        parser_error(e.line, e.msg, context=e.context)
-        exit(1)
+    sheets: list[Sheet] = list()
+    for filename in opts['file']:
+        try:
+            if filename == "-":
+                sheets.append(parse(sys.stdin.read()))
+            else:
+                with open(filename) as f:
+                    sheets.append(parse(f.read()))
+        except ParseError as e:
+            parser_error(e.line, e.msg, context=e.context)
+            exit(1)
     if command == "sum":
-        print(print_sum([sheet]), end="")
+        print(print_sum(sheets), end="")
     elif command == "select":
         fields = [ f.strip() for f in " ".join(args).split(",") ]
-        print(print_csv([sheet], fields), end="")
+        print(print_csv(sheets, fields), end="")
     elif command == "print":
-        print(print_custom([sheet], " ".join(args), undefined="undefined"),
+        print(print_custom(sheets, " ".join(args), undefined="undefined"),
               end="")
     elif command == "fields":
-        print('\n'.join(sheet.get_fields()))
+        for sheet in sheets:
+            print('\n'.join(sheet.get_fields()))
     else:
         print(f"Unknown command '{command}'", file=sys.stderr)
         exit(1)
