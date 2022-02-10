@@ -1,0 +1,49 @@
+>>> args = select date,start,stop,hours
+>>> code = 0
+>>> stdin >>>
+# Some stuff here
+task something
+
+2021-01-01
+    10:00 start something
+    11:00 stop
+>>> stdout >>>
+date,start,stop,hours
+2021-01-01,10:00,11:00,1.00
+>>> stderr >>>
+--------------------------------------8<--------------------------------------
+>>> args = select date,start,stop,hours
+>>> code = 0
+>>> stdin >>>
+# Some stuff here
+task something
+
+2021-01-01
+    10:00 start something
+    11:00 stop
+2021-01-02
+    10:00 start something
+    11:00 stop
+>>> stdout >>>
+date,start,stop,hours
+2021-01-01,10:00,11:00,1.00
+2021-01-02,10:00,11:00,1.00
+>>> stderr >>>
+--------------------------------------8<--------------------------------------
+>>> args = select start,stop,hours
+>>> code = 0
+>>> stdin >>>
+# Some stuff here
+task something
+
+2021-01-01
+    10:00 start something
+    11:00 stop
+2021-01-02
+    10:00 start something
+    11:00 stop
+>>> stdout >>>
+start,stop,hours
+10:00,11:00,2.00
+>>> stderr >>>
+--------------------------------------8<--------------------------------------
