@@ -87,6 +87,10 @@ if __name__ == "__main__":
         print(f"Command '{command}' takes no further arguments",
               file=sys.stderr)
         exit(1)
+    elif command in ["select", "print"] and not args:
+        print("At least one further argument is required with the "
+             f"'{command}' command", file=sys.stderr)
+        exit(1)
     elif command not in ["sum", "fields", "select", "print"]:
         print(f"Unknown command '{command}'", file=sys.stderr)
         exit(1)
