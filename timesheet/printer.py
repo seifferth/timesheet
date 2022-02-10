@@ -9,15 +9,17 @@ def dot_total(total: str) -> str:
            len(total[total.find("  ")+1:total.rfind("  ")+1]) * '.' + \
            total[total.rfind("  ")+1:]
 
-def print_sum(sheet: Sheet) -> str:
+def print_sum(sheets: list[Sheet]) -> str:
     lines = list()
     grand_total = Decimal(0)
     daily_rows: dict[str,list] = dict()
-    for row in sheet.select(["date", "task", "desc", "hours"], undefined=""):
-        if row["date"] not in daily_rows.keys():
-            daily_rows[row["date"]] = list()
-        daily_rows[row["date"]].append({ k: v for k, v in row.items()
-                                              if k != "date" })
+    for sheet  in sheets:
+        for row in sheet.select(["date", "task", "desc", "hours"],
+                                undefined=""):
+            if row["date"] not in daily_rows.keys():
+                daily_rows[row["date"]] = list()
+            daily_rows[row["date"]].append({ k: v for k, v in row.items()
+                                                  if k != "date" })
     for date in sorted(daily_rows.keys()):
         daily_total = Decimal(0)
         lines.append(date)
@@ -37,19 +39,22 @@ def print_sum(sheet: Sheet) -> str:
     )
     return '\n'.join(lines)+'\n'
 
-def print_custom(sheet: Sheet, format: str, undefined: str="undefined") -> str:
+def print_custom(sheets: list[Sheet], format: str,
+                 undefined: str="undefined") -> str:
     lines = list()
-    format = format.replace("{hours}", "{hours:.2f}") # Set default hours format
+    format = format.replace("{hours}", "{hours:.2f}") # Set default format
     fields = set(re.findall(r'{([^}:]*)[}:]', format))
-    for linedict in sheet.select(fields):
-        lines.append(format.format(**linedict))
+    for sheet in sheets:
+        for linedict in sheet.select(fields):
+            lines.append(format.format(**linedict))
     return '\n'.join(lines)+'\n'
 
-def print_csv(sheet: Sheet, fields: list[str]) -> str:
+def print_csv(sheets: list[Sheet], fields: list[str]) -> str:
     result = StringIO()
     w = csv.writer(result, lineterminator="\n")
     w.writerow(fields)
-    for row in sheet.select(fields, undefined=""):
-        if "hours" in row.keys(): row["hours"] = f'{row["hours"]:.2f}'
-        w.writerow([ row[f] for f in fields ])
+    for sheet in sheets:
+        for row in sheet.select(fields, undefined=""):
+            if "hours" in row.keys(): row["hours"] = f'{row["hours"]:.2f}'
+            w.writerow([ row[f] for f in fields ])
     result.seek(0); return result.read()

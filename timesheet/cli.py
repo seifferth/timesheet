@@ -84,12 +84,12 @@ if __name__ == "__main__":
         parser_error(e.line, e.msg, context=e.context)
         exit(1)
     if command == "sum":
-        print(print_sum(sheet), end="")
+        print(print_sum([sheet]), end="")
     elif command == "select":
         fields = [ f.strip() for f in " ".join(args).split(",") ]
-        print(print_csv(sheet, fields), end="")
+        print(print_csv([sheet], fields), end="")
     elif command == "print":
-        print(print_custom(sheet, " ".join(args), undefined="undefined"),
+        print(print_custom([sheet], " ".join(args), undefined="undefined"),
               end="")
     elif command == "fields":
         print('\n'.join(sheet.get_fields()))
