@@ -22,7 +22,12 @@ Commands
     print       Like select, but takes a python format-string as a
                 command argument and returns custom rather than csv
                 formatted output. E. g. 'print "On {date} I worked
-                {hours:.2f} hours on {task}"'.
+                {hours:.2f} hours on {task}"'. Each format string
+                must be passed as a single command argument. If more
+                than one format string are provided, they will be
+                applied in order of specification. This may be handy
+                if one wants to add a sum row showing some sort of
+                total, for instance.
     fields      Print a list of fields that are available to the
                 select and print commands. The available fields are
                 a union of standard and custom fields. Custom fields
@@ -104,8 +109,9 @@ if __name__ == "__main__":
         print(print_csv(sheets, fields, undefined=undefined), end="")
     elif command == "print":
         undefined = opts.get("undefined", "undefined")
-        print(print_custom(sheets, " ".join(args), undefined=undefined),
-              end="")
+        for fstring in args:
+            print(print_custom(sheets, fstring, undefined=undefined),
+                  end="")
     elif command == "fields":
         for sheet in sheets:
             print('\n'.join(sheet.get_fields()))
