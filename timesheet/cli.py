@@ -31,6 +31,10 @@ Commands
 Common Options
     -f FILE, --file FILE
         Read the timesheet data from FILE rather than from stdin.
+    --undefined STRING
+        Use the specified STRING for fields that do not have a
+        defined value. Default: 'undefined' with the print command
+        or the empty string with select.
     -h, --help
         Print this help message and exit.
 
@@ -59,7 +63,8 @@ Standard Fields
 """.lstrip()
 
 if __name__ == "__main__":
-    all_opts, rest = getopt(sys.argv[1:], "hf:", ["help", "file="])
+    all_opts, rest = getopt(sys.argv[1:], "hf:", ["help", "file=",
+                            "undefined="])
     short2long = { "-h": "--help", "-f": "--file" }
     opts = { short2long.get(k, k).lstrip('-'): v for k, v in all_opts }
     if "help" in opts:
@@ -95,9 +100,11 @@ if __name__ == "__main__":
         print(print_sum(sheets), end="")
     elif command == "select":
         fields = [ f.strip() for f in " ".join(args).split(",") ]
-        print(print_csv(sheets, fields), end="")
+        undefined = opts.get("undefined", "")
+        print(print_csv(sheets, fields, undefined=undefined), end="")
     elif command == "print":
-        print(print_custom(sheets, " ".join(args), undefined="undefined"),
+        undefined = opts.get("undefined", "undefined")
+        print(print_custom(sheets, " ".join(args), undefined=undefined),
               end="")
     elif command == "fields":
         for sheet in sheets:

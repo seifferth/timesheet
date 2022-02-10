@@ -45,11 +45,12 @@ def print_custom(sheets: list[Sheet], format: str,
     format = format.replace("{hours}", "{hours:.2f}") # Set default format
     fields = set(re.findall(r'{([^}:]*)[}:]', format))
     for sheet in sheets:
-        for linedict in sheet.select(fields):
+        for linedict in sheet.select(fields, undefined=undefined):
             lines.append(format.format(**linedict))
     return '\n'.join(lines)+'\n'
 
-def print_csv(sheets: list[Sheet], fields: list[str]) -> str:
+def print_csv(sheets: list[Sheet], fields: list[str],
+              undefined: str="") -> str:
     result = StringIO()
     if '*' in fields:
         available_fields = []
@@ -62,7 +63,7 @@ def print_csv(sheets: list[Sheet], fields: list[str]) -> str:
     w = csv.writer(result, lineterminator="\n")
     w.writerow(fields)
     for sheet in sheets:
-        for row in sheet.select(fields, undefined=""):
+        for row in sheet.select(fields, undefined=undefined):
             if "hours" in row.keys(): row["hours"] = f'{row["hours"]:.2f}'
             w.writerow([ row[f] for f in fields ])
     result.seek(0); return result.read()
