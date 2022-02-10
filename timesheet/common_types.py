@@ -13,6 +13,8 @@ class ParseError(Exception):
         return self.msg
 class ValidationError(Exception):
     pass
+class DescPlaceholder():
+    pass
 
 class Task:
     def __init__(self, lno: int, name: str):
@@ -96,8 +98,8 @@ class Sheet:
     def add_entry(self, entry: Entry) -> None:
         self.entries.append(entry)
     def get_fields(self) -> list[str]:
-        attrs = [ "date", "hours", "minutes", "task", "year", "month", "day",
-                  "start", "stop" ]
+        attrs = [ "date", "year", "month", "day", "task", DescPlaceholder,
+                  "hours", "minutes", "start", "stop" ]
         for k in self.defaults.keys():
             if k not in attrs: attrs.append(k)
         for t in self.tasks.values():
@@ -106,6 +108,11 @@ class Sheet:
         for e in self.entries:
             for k in e.attrs.keys():
                 if k not in attrs: attrs.append(k)
+        if "desc" in attrs:
+            attrs.remove("desc")
+            attrs[attrs.index(DescPlaceholder)] = "desc"
+        else:
+            attrs.remove(DescPlaceholder)
         return attrs
     def select(self, fields: list[str], undefined="undefined") -> list[dict]:
         lines: dict[tuple[str,Decimal]] = dict()

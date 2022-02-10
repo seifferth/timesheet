@@ -5,23 +5,94 @@ from common_types import *
 from parser import parse
 from printer import print_sum, print_custom, print_csv
 from misc import parser_error
+from getopt import gnu_getopt as getopt
+
+_cli_help = """
+Usage: timesheet [OPTION]... COMMAND [ARG]...
+
+Commands
+    sum         Print a summary of per-task totals for each day
+                in the timesheet.
+    select      Print a csv-list containing selected fields. The
+                fields can be specified as command arguments and
+                must be separated by commas. Whitespace around the
+                commas is optional. E. g. 'select date, task, hours'.
+    print       Like select, but takes a python format-string as a
+                command argument and returns custom rather than csv
+                formatted output. E. g. 'print "On {date} I worked
+                {hours:.2f} hours on {task}"'.
+    fields      Print a list of fields that are available to the
+                select and print commands. The available fields are
+                a union of standard and custom fields. Custom fields
+                are available if found in the timesheet data.
+
+Common Options
+    -f FILE, --file FILE
+        Read the timesheet data from FILE rather than from stdin.
+    -h, --help
+        Print this help message and exit.
+
+Standard Fields
+    date, year, month, day
+        The date of a certain entry, or only the day, month or year
+        part of that date respectively.
+    task, desc
+        The task id and task description. The desc field is not
+        strictly required, but it is advised to include one in
+        task definitions. If the desc field is provided, it will
+        be displayed in the output of the 'sum' command.
+    hours, minutes
+        The cumulative time spent on whatever else is selected.
+        Both fields return the total value. I. e. minutes may be
+        more than 60 and hours may contain fractional parts. Time
+        is tracked in minutes internally. Hours can possibly be
+        inaccurate due to rounding errors.
+    start, stop
+        The precise start and stop time of time entries. Note that
+        deduplication still takes place even when start and stop
+        are selected. Hence the hours and minutes are not always
+        the difference between start and stop times, but rather
+        the sum of this difference for all entries that share the
+        same start and stop times.
+""".lstrip()
 
 if __name__ == "__main__":
+    opts, rest = getopt(sys.argv[1:], "hf:", ["help", "file="])
+    short2long = { "-h": "--help", "-f": "--file" }
+    opts = { short2long.get(k, k).lstrip('-'): v for k, v in opts }
+    if 'help' in opts:
+        print(_cli_help)
+        exit(0)
+    if len(rest) < 1:
+        print("No COMMAND specified for timesheet", file=sys.stderr)
+        exit(1)
+    command, args = rest[0], rest[1:]
+    if command in ["sum", "fields"] and args:
+        print(f"Command '{command}' takes no further arguments",
+              file=sys.stderr)
+        exit(1)
+    elif command not in ["sum", "fields", "select", "print"]:
+        print(f"Unknown command '{command}'", file=sys.stderr)
+        exit(1)
     try:
-        sheet: Sheet = parse(sys.stdin.read())
+        if opts.get("file", "-") == "-":
+            sheet: Sheet = parse(sys.stdin.read())
+        else:
+            with open(opts.get("file")) as f:
+                sheet: Sheet = parse(f.read())
     except ParseError as e:
         parser_error(e.line, e.msg, context=e.context)
         exit(1)
-    if sys.argv[1] == "sum":
+    if command == "sum":
         print(print_sum(sheet), end="")
-    elif sys.argv[1] == "print":
-        print(print_custom(sheet, sys.argv[2], undefined="undefined"), end="")
-    elif sys.argv[1] in ("fields"):
-        # Print all fields that can be used for format strings
-        print('\n'.join(sheet.get_fields()))
-    elif sys.argv[1] == "select":
-        fields = "".join(sys.argv[2:]).split(",")
+    elif command == "select":
+        fields = [ f.strip() for f in " ".join(args).split(",") ]
         print(print_csv(sheet, fields), end="")
+    elif command == "print":
+        print(print_custom(sheet, " ".join(args), undefined="undefined"),
+              end="")
+    elif command == "fields":
+        print('\n'.join(sheet.get_fields()))
     else:
-        print(f"Unknown command '{sys.argv[1]}'", file=sys.stderr)
+        print(f"Unknown command '{command}'", file=sys.stderr)
         exit(1)
