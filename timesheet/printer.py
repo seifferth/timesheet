@@ -51,6 +51,14 @@ def print_custom(sheets: list[Sheet], format: str,
 
 def print_csv(sheets: list[Sheet], fields: list[str]) -> str:
     result = StringIO()
+    if '*' in fields:
+        available_fields = []
+        for s in sheets:
+            for f in s.get_fields():
+                if f not in available_fields: available_fields.append(f)
+        while '*' in fields:
+            i = fields.index('*')
+            fields[i:i+1] = available_fields
     w = csv.writer(result, lineterminator="\n")
     w.writerow(fields)
     for sheet in sheets:

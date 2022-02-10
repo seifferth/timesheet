@@ -17,6 +17,8 @@ Commands
                 fields can be specified as command arguments and
                 must be separated by commas. Whitespace around the
                 commas is optional. E. g. 'select date, task, hours'.
+                The wildcard '*' may be used to select all fields
+                that appear in the timesheet data at least once.
     print       Like select, but takes a python format-string as a
                 command argument and returns custom rather than csv
                 formatted output. E. g. 'print "On {date} I worked
