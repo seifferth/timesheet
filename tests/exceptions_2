@@ -24,6 +24,31 @@ attributes on line 1
   | 2022-02-10
 -----------------------------------8<-----------------------------------
 >>> stdin >>>
+task docs desc = Write documentation
+
+task code
+    desc = Write code
+task docs
+    desc = This is a duplicate task (which is not allowed)
+
+2022-02-10
+    13:00 start docs
+    14:00 start code
+    14:15 stop
+>>> args = sum
+>>> code = 1
+>>> stdout >>>
+>>> stderr >>>
+Error while parsing line 5: Task 'docs' was already defined with different
+attributes on line 1
+  | task code
+  |     desc = Write code
+  > task docs
+  |     desc = This is a duplicate task (which is not allowed)
+  | 
+  | 2022-02-10
+-----------------------------------8<-----------------------------------
+>>> stdin >>>
 # This is an initial comment to change the line numbers
 
 task docs
@@ -615,6 +640,77 @@ because it has already been set to 'No description' on line 1
   | default
   | 
   >     desc = Some description
+-----------------------------------8<-----------------------------------
+>>> stdin >>>
+task docs
+    desc = Write documentation
+task code
+    desc = Write code
+
+2022-02-10-11
+    13:00 start docs
+    14:00 start code
+    14:15 stop
+>>> args = sum
+>>> code = 1
+>>> stdout >>>
+>>> stderr >>>
+Error while parsing line 6: Cannot parse date '2022-02-10-11'
+  |     desc = Write code
+  | 
+  > 2022-02-10-11
+  |     13:00 start docs
+  |     14:00 start code
+  |     14:15 stop
+-----------------------------------8<-----------------------------------
+>>> stdin >>>
+
+
+task docs
+    desc = Write documentation
+
+task code
+    desc = Write code
+
+20220210
+    13:00 start docs
+    14:00 start code
+    14:15 stop
+>>> args = sum
+>>> code = 1
+>>> stdout >>>
+>>> stderr >>>
+Error while parsing line 9: Cannot parse date '20220210'
+  |     desc = Write code
+  | 
+  > 20220210
+  |     13:00 start docs
+  |     14:00 start code
+  |     14:15 stop
+-----------------------------------8<-----------------------------------
+>>> stdin >>>
+# Offset lines a bit
+task docs
+    desc = Write documentation
+task code
+    desc = Write code
+unknown something is not defined
+
+2022-02-10
+    13:00 start docs
+    14:00 start code
+    14:15 stop
+>>> args = sum
+>>> code = 1
+>>> stdout >>>
+>>> stderr >>>
+Error while parsing line 6: Unknown entry type 'unknown'
+  | task code
+  |     desc = Write code
+  > unknown something is not defined
+  | 
+  | 2022-02-10
+  |     13:00 start docs
 -----------------------------------8<-----------------------------------
 >>> stdin >>>
 # Offset lines a bit

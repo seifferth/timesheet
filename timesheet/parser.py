@@ -125,10 +125,10 @@ def parse(sheet: str) -> Sheet:
                 parse_task(i, ls, res)
             elif re.match(r'^[0-9]', entry_type):
                 if not re.match(r'^[0-9]{4}-[0-9]{2}-[0-9]{2}$', entry_type):
-                    raise ParseError(0, f"Cannot parse date '{entry_type}'")
+                    raise ParseError(i-1, f"Cannot parse date '{entry_type}'")
                 parse_day(i, date=entry_type, lines=ls, sheet=res)
             else:
-                raise ParseError(0, f"Unknown entry type '{entry_type}'")
+                raise ParseError(i-1, f"Unknown entry type '{entry_type}'")
             i=j; continue
         return res
     except ParseError as e:
