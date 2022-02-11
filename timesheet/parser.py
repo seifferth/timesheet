@@ -82,7 +82,7 @@ def parse_default(lno: int, lines: list[str], sheet: Sheet) -> None:
             raise ParseError(lno+i, "Expected default attribute of form "
                             f"'name = val' but found '{l}'")
         key, val = re.split(r'\s*=\s*', l, maxsplit=1)
-        sheet.set_default(key, val)
+        sheet.set_default(key, val, lno=lno+i)
 
 def strip_comments(sheet: str) -> str:
     """Strips comments"""

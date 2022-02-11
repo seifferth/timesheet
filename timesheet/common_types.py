@@ -76,14 +76,17 @@ class Sheet:
     def __init__(self):
         self.tasks: dict[str,Task] = dict()
         self.defaults: dict[str,str] = dict()
+        self._defaults_lnos: dict[str,str] = dict()
         self.entries: list[Entry] = list()
-    def set_default(self, key, val):
+    def set_default(self, key, val, lno):
         if key in self.defaults.keys() and val != self.defaults[key]:
-            raise ParseError(0,
+            raise ParseError(lno,
                 f"Cannot set default {key} to '{val}', because it has "\
-                f"already been set to '{self.defaults[key]}' earlier"
+                f"already been set to '{self.defaults[key]}' on line "\
+                f"{self._defaults_lnos[key]}"
             )
         self.defaults[key] = val
+        self._defaults_lnos[key] = lno+2
     def get_default(self, key: str) -> str:
         return self.defaults.get(key)
     def add_task(self, task: Task):

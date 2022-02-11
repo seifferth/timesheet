@@ -517,6 +517,109 @@ but found 'status todo'
 # Offset lines a bit
 task docs
     desc = Write documentation
+default desc = No description
+task code
+    desc = Write code
+
+default desc = Some description
+
+2022-02-10
+    13:00 start docs
+    14:00 start code
+    14:15 stop
+>>> args = sum
+>>> code = 1
+>>> stdout >>>
+>>> stderr >>>
+Error while parsing line 8: Cannot set default desc to 'Some description',
+because it has already been set to 'No description' on line 4
+  |     desc = Write code
+  | 
+  > default desc = Some description
+  | 
+  | 2022-02-10
+  |     13:00 start docs
+-----------------------------------8<-----------------------------------
+>>> stdin >>>
+# Offset lines a bit
+task docs
+    desc = Write documentation
+default
+    desc = No description
+task code
+    desc = Write code
+
+default desc = Some description
+
+2022-02-10
+    13:00 start docs
+    14:00 start code
+    14:15 stop
+>>> args = sum
+>>> code = 1
+>>> stdout >>>
+>>> stderr >>>
+Error while parsing line 9: Cannot set default desc to 'Some description',
+because it has already been set to 'No description' on line 5
+  |     desc = Write code
+  | 
+  > default desc = Some description
+  | 
+  | 2022-02-10
+  |     13:00 start docs
+-----------------------------------8<-----------------------------------
+>>> stdin >>>
+# Offset lines a bit
+task docs
+    desc = Write documentation
+default
+    desc = No description
+task code
+    desc = Write code
+
+2022-02-10
+    13:00 start docs
+    14:00 start code
+    14:15 stop
+
+default desc = Some description
+>>> args = sum
+>>> code = 1
+>>> stdout >>>
+>>> stderr >>>
+Error while parsing line 14: Cannot set default desc to 'Some description',
+because it has already been set to 'No description' on line 5
+  |     14:15 stop
+  | 
+  > default desc = Some description
+-----------------------------------8<-----------------------------------
+>>> stdin >>>
+default desc = No description
+task docs desc = Write documentation
+task code desc = Write code
+
+2022-02-10
+    13:00 start docs
+    14:00 start code
+    14:15 stop
+
+default
+
+    desc = Some description
+>>> args = sum
+>>> code = 1
+>>> stdout >>>
+>>> stderr >>>
+Error while parsing line 12: Cannot set default desc to 'Some description',
+because it has already been set to 'No description' on line 1
+  | default
+  | 
+  >     desc = Some description
+-----------------------------------8<-----------------------------------
+>>> stdin >>>
+# Offset lines a bit
+task docs
+    desc = Write documentation
 task code
     desc = Write code
 
