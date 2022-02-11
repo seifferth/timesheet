@@ -392,6 +392,81 @@ Error while parsing line 12: Unexpected end of block
   >     desc = Do something else \
 -----------------------------------8<-----------------------------------
 >>> stdin >>>
+task docs
+    desc = Write documentation
+
+default desc = No description provided
+default something this is missing an equals sign
+
+task code
+    desc = Write code
+
+2022-02-10
+    13:00 start docs
+    14:00 start code
+    14:15 stop
+>>> args = sum
+>>> code = 1
+>>> stdout >>>
+>>> stderr >>>
+Error while parsing line 5: Expected default attribute of form 'name = val' but
+found 'something this is missing an equals sign'
+  | 
+  | default desc = No description provided
+  > default something this is missing an equals sign
+  | 
+  | task code
+  |     desc = Write code
+-----------------------------------8<-----------------------------------
+>>> stdin >>>
+task docs
+    desc = Write documentation
+
+default
+    desc = No description provided
+    something this is missing an equals sign
+
+task code
+    desc = Write code
+
+2022-02-10
+    13:00 start docs
+    14:00 start code
+    14:15 stop
+>>> args = sum
+>>> code = 1
+>>> stdout >>>
+>>> stderr >>>
+Error while parsing line 6: Expected default attribute of form 'name = val' but
+found 'something this is missing an equals sign'
+  | default
+  |     desc = No description provided
+  >     something this is missing an equals sign
+  | 
+  | task code
+  |     desc = Write code
+-----------------------------------8<-----------------------------------
+>>> stdin >>>
+task docs desc = Write documentation
+task code desc Write code       # This line is missing the equals sign
+
+2022-02-10
+    13:00 start docs
+    14:00 start code
+    14:15 stop
+>>> args = sum
+>>> code = 1
+>>> stdout >>>
+>>> stderr >>>
+Error while parsing line 2: Expected task attribute of form 'name = val' but
+found 'desc Write code'
+  | task docs desc = Write documentation
+  > task code desc Write code       # This line is missing the equals sign
+  | 
+  | 2022-02-10
+  |     13:00 start docs
+-----------------------------------8<-----------------------------------
+>>> stdin >>>
 # Offset lines a bit
 task docs
     desc = Write documentation

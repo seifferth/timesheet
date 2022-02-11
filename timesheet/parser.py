@@ -53,20 +53,24 @@ def parse_day(lno_offset: int, date: str, lines: list[str], sheet: Sheet) \
 
 def parse_task(lno: int, lines: list[str], sheet: Sheet) -> None:
     name, *l = lines[0].split(maxsplit=1)
+    ls_offset = -1 if l else 0
     t = Task(lno, name)
     for i, l in enumerate(l + lines[1:]):
         if not l.strip(): continue
         if not "=" in l:
-            raise ParseError(lno+i,
+            raise ParseError(lno+i+ls_offset,
                 f"Expected task attribute of form 'name = val' but found '{l}'"
             )
         key, val = re.split(r'\s*=\s*', l, maxsplit=1)
         t.set(key, val)
     sheet.add_task(t)
 
-def parse_default(lines: list[str], sheet: Sheet) -> None:
-    for l in lines:
+def parse_default(lno: int, lines: list[str], sheet: Sheet) -> None:
+    for i, l in enumerate(lines):
         if not l.strip(): continue
+        if not "=" in l:
+            raise ParseError(lno+i, "Expected default attribute of form "
+                            f"'name = val' but found '{l}'")
         key, val = re.split(r'\s*=\s*', l, maxsplit=1)
         sheet.set_default(key, val)
 
@@ -93,6 +97,7 @@ def parse(sheet: str) -> Sheet:
             entry_type, *l = l.split(maxsplit=1)
 
             ls = [] if len(l) == 0 else [l[0]]; j=i+1
+            default_ls_offset = -len(ls)
             while j < len(lines) and starts_blank(lines[j]):
                 ls.append(lines[j].lstrip()); j+=1
             # Join continuation lines
@@ -105,7 +110,7 @@ def parse(sheet: str) -> Sheet:
                     del ls[cl+1]
                 else: cl+=1
             if entry_type == "default":
-                parse_default(ls, res)
+                parse_default(i+default_ls_offset, ls, res)
             elif entry_type == "task":
                 parse_task(i, ls, res)
             elif re.match(r'^[0-9]', entry_type):
