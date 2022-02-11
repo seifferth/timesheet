@@ -101,7 +101,7 @@ Error while parsing line 4: Expected task attribute of form 'name = val' but
 found 'desc Write code'
   |     desc = Write documentation
   | task code
-  >     desc Write code
+  >     desc Write code     # This line is missing the equals sign
   | 
   | 2022-02-10
   |     13:00 start docs

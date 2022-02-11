@@ -118,6 +118,7 @@ def parse(sheet: str) -> Sheet:
         return res
     except ParseError as e:
         lno = e.line+1
+        lines = sheet.splitlines()
         pre = lines[max(0,lno-2):lno]
         if pre: pre = list(map(lambda x: f'  | {x}', pre))
         post = lines[min(len(lines),lno+1):min(len(lines),lno+4)]
