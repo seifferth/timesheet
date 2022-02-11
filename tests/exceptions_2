@@ -1,0 +1,108 @@
+>>> stdin >>>
+task docs
+    desc = Write documentation
+task code
+    desc = Write code
+task docs
+    desc = This is a duplicate task (which is not allowed)
+
+2022-02-10
+    13:00 start docs
+    14:00 start code
+    14:15 stop
+>>> args = sum
+>>> code = 1
+>>> stdout >>>
+>>> stderr >>>
+Error while parsing line 5: Task 'docs' was already defined with different
+attributes on line 1
+  | task code
+  |     desc = Write code
+  > task docs
+  |     desc = This is a duplicate task (which is not allowed)
+  | 
+  | 2022-02-10
+-----------------------------------8<-----------------------------------
+>>> stdin >>>
+# This is an initial comment to change the line numbers
+
+task docs
+    desc = Write documentation
+
+
+
+task code
+    desc = Write code
+task docs
+    desc = This is a duplicate task (which is not allowed)
+
+2022-02-10
+    13:00 start docs
+    14:00 start code
+    14:15 stop
+>>> args = sum
+>>> code = 1
+>>> stdout >>>
+>>> stderr >>>
+Error while parsing line 10: Task 'docs' was already defined with different
+attributes on line 3
+  | task code
+  |     desc = Write code
+  > task docs
+  |     desc = This is a duplicate task (which is not allowed)
+  | 
+  | 2022-02-10
+-----------------------------------8<-----------------------------------
+>>> stdin >>>
+# This is an initial comment to change the line numbers
+
+task docs
+    desc = Write documentation
+
+
+
+task code
+    desc = Write code
+task code
+    desc = This is a duplicate task (which is not allowed)
+
+2022-02-10
+    13:00 start docs
+    14:00 start code
+    14:15 stop
+>>> args = sum
+>>> code = 1
+>>> stdout >>>
+>>> stderr >>>
+Error while parsing line 10: Task 'code' was already defined with different
+attributes on line 8
+  | task code
+  |     desc = Write code
+  > task code
+  |     desc = This is a duplicate task (which is not allowed)
+  | 
+  | 2022-02-10
+-----------------------------------8<-----------------------------------
+>>> stdin >>>
+task docs
+    desc = Write documentation
+task code
+    desc Write code     # This line is missing the equals sign
+
+2022-02-10
+    13:00 start docs
+    14:00 start code
+    14:15 stop
+>>> args = sum
+>>> code = 1
+>>> stdout >>>
+>>> stderr >>>
+Error while parsing line 4: Expected task attribute of form 'name = val' but
+found 'desc Write code'
+  |     desc = Write documentation
+  | task code
+  >     desc Write code
+  | 
+  | 2022-02-10
+  |     13:00 start docs
+-----------------------------------8<-----------------------------------

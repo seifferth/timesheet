@@ -54,10 +54,10 @@ def parse_day(lno_offset: int, date: str, lines: list[str], sheet: Sheet) \
 def parse_task(lno: int, lines: list[str], sheet: Sheet) -> None:
     name, *l = lines[0].split(maxsplit=1)
     t = Task(lno, name)
-    for l in l + lines[1:]:
+    for i, l in enumerate(l + lines[1:]):
         if not l.strip(): continue
         if not "=" in l:
-            raise ParseError(0,
+            raise ParseError(lno+i,
                 f"Expected task attribute of form 'name = val' but found '{l}'"
             )
         key, val = re.split(r'\s*=\s*', l, maxsplit=1)
