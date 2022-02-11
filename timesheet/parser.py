@@ -89,7 +89,7 @@ def parse(sheet: str) -> Sheet:
             l = lines[i]
             if not l.strip():       i+=1; continue
             if starts_blank(l):
-                raise ParseError(i, "Unexpected indent")
+                raise ParseError(i-1, "Unexpected indent")
             entry_type, *l = l.split(maxsplit=1)
 
             ls = [] if len(l) == 0 else [l[0]]; j=i+1
@@ -100,7 +100,7 @@ def parse(sheet: str) -> Sheet:
             while cl < len(ls):
                 if len(ls[cl]) > 0 and ls[cl][-1] == '\\':
                     if cl+1 >= len(ls):
-                        i+=cl; raise ParseError(0, 'Unexpected end of block')
+                        i+=cl; raise ParseError(i-1, 'Unexpected end of block')
                     ls[cl] = ls[cl][:-1] + ls[cl+1].lstrip()
                     del ls[cl+1]
                 else: cl+=1
