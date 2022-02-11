@@ -474,6 +474,53 @@ task code
     desc = Write code
 
 2022-02-10
+    13:00 start docs desc this should have an equals sign
+    14:00 start code
+    14:15 stop
+>>> args = sum
+>>> code = 1
+>>> stdout >>>
+>>> stderr >>>
+Error while parsing line 8: Expected time entry attribute of form 'name = val'
+but found 'desc this should have an equals sign'
+  | 
+  | 2022-02-10
+  >     13:00 start docs desc this should have an equals sign
+  |     14:00 start code
+  |     14:15 stop
+-----------------------------------8<-----------------------------------
+>>> stdin >>>
+# Offset lines a bit
+task docs
+    desc = Write documentation
+task code
+    desc = Write code
+
+2022-02-10
+    13:00 start docs desc = Time-entry-specific description
+                     status todo    # Missing equals sign
+    14:00 start code
+    14:15 stop
+>>> args = sum
+>>> code = 1
+>>> stdout >>>
+>>> stderr >>>
+Error while parsing line 9: Expected time entry attribute of form 'name = val'
+but found 'status todo'
+  | 2022-02-10
+  |     13:00 start docs desc = Time-entry-specific description
+  >                      status todo    # Missing equals sign
+  |     14:00 start code
+  |     14:15 stop
+-----------------------------------8<-----------------------------------
+>>> stdin >>>
+# Offset lines a bit
+task docs
+    desc = Write documentation
+task code
+    desc = Write code
+
+2022-02-10
     13:00 start docs
     14:00 start code
     14:15 stop

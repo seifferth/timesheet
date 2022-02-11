@@ -9,6 +9,11 @@ def parse_day(lno_offset: int, date: str, lines: list[str], sheet: Sheet) \
     start: EntryStartPoint = None
     for lno, l in enumerate(lines):
         if re.match(r'^[^0-9\s]', l):       # Attribute line
+            if not "=" in l:
+                raise ParseError(lno_offset+lno,
+                    "Expected time entry attribute of form "
+                   f"'name = val' but found '{l}'"
+                )
             key, val = re.split(r'\s*=\s*', l, maxsplit=1)
             start.attrs[key] = val
         elif re.match(r'^[0-9]', l):        # Time entry
@@ -44,6 +49,11 @@ def parse_day(lno_offset: int, date: str, lines: list[str], sheet: Sheet) \
                 except ParseError as e:
                     raise ParseError(lno_offset+lno, e.msg)
                 if l:
+                    if not "=" in l:
+                        raise ParseError(lno_offset+lno,
+                            "Expected time entry attribute of form "
+                           f"'name = val' but found '{l}'"
+                        )
                     key, val = re.split(r'\s*=\s*', l, maxsplit=1)
                     start.attrs[key] = val
             else:
