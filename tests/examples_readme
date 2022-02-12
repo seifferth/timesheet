@@ -1,0 +1,196 @@
+>>> stdin >>>
+task docs   # Write documentation
+    desc = Create a human-readable description of the program's behaviour
+    status = todo
+task code   # Write code
+    desc = Create a computer-readable description of a certain program's \
+           behaviour
+    status = done
+
+2022-02-10  # Thursday, time to wrap up some half-baked stuff
+    13:00 start docs
+    14:00 start code
+    14:15 stop
+
+task research
+    desc   =  Search for similar programs that may provide inspiration \
+              for future work
+    status =  todo
+    note   =  This may actually be much more important than any other \
+              kind of work you might be doing.
+
+2022-02-11  # Friday, which is the day I like to focus on reading rather
+            # than writing
+    13:00 start research
+    15:20 start docs
+    15:30 start research
+    17:00 stop      # Dinner break
+    19:00 start research
+    20:15 stop
+>>> args = sum
+>>> code = 0
+>>> stdout >>>
+2022-02-10
+    docs Create a human-readable description of the program..  1.00
+    code Create a computer-readable description of a certai..  0.25
+    Total hours .............................................. 1.25
+
+2022-02-11
+    research Search for similar programs that may provide i..  5.08
+    docs Create a human-readable description of the program..  0.17
+    Total hours .............................................. 5.25
+
+Grand total .................................................. 6.50
+>>> stderr >>>
+-------------------------------8<-------------------------------
+>>> stdin >>>
+task docs   # Write documentation
+    desc = Create a human-readable description of the program's behaviour
+    status = todo
+task code   # Write code
+    desc = Create a computer-readable description of a certain program's \
+           behaviour
+    status = done
+
+2022-02-10  # Thursday, time to wrap up some half-baked stuff
+    13:00 start docs
+    14:00 start code
+    14:15 stop
+
+task research
+    desc   =  Search for similar programs that may provide inspiration \
+              for future work
+    status =  todo
+    note   =  This may actually be much more important than any other \
+              kind of work you might be doing.
+
+2022-02-11  # Friday, which is the day I like to focus on reading rather
+            # than writing
+    13:00 start research
+    15:20 start docs
+    15:30 start research
+    17:00 stop      # Dinner break
+    19:00 start research
+    20:15 stop
+>>> args = print '{task:<20} {hours:.4f}'
+>>> code = 0
+>>> stdout >>>
+docs                 1.1667
+code                 0.2500
+research             5.0833
+>>> stderr >>>
+-------------------------------8<-------------------------------
+>>> stdin >>>
+task docs   # Write documentation
+    desc = Create a human-readable description of the program's behaviour
+    status = todo
+task code   # Write code
+    desc = Create a computer-readable description of a certain program's \
+           behaviour
+    status = done
+
+2022-02-10  # Thursday, time to wrap up some half-baked stuff
+    13:00 start docs
+    14:00 start code
+    14:15 stop
+
+task research
+    desc   =  Search for similar programs that may provide inspiration \
+              for future work
+    status =  todo
+    note   =  This may actually be much more important than any other \
+              kind of work you might be doing.
+
+2022-02-11  # Friday, which is the day I like to focus on reading rather
+            # than writing
+    13:00 start research
+    15:20 start docs
+    15:30 start research
+    17:00 stop      # Dinner break
+    19:00 start research
+    20:15 stop
+>>> args = print '[{status}] {task} ({hours} hours spent)'
+>>> code = 0
+>>> stdout >>>
+[todo] docs (1.17 hours spent)
+[done] code (0.25 hours spent)
+[todo] research (5.08 hours spent)
+>>> stderr >>>
+-------------------------------8<-------------------------------
+>>> stdin >>>
+task docs   # Write documentation
+    desc = Create a human-readable description of the program's behaviour
+    status = todo
+task code   # Write code
+    desc = Create a computer-readable description of a certain program's \
+           behaviour
+    status = done
+
+2022-02-10  # Thursday, time to wrap up some half-baked stuff
+    13:00 start docs
+    14:00 start code
+    14:15 stop
+
+task research
+    desc   =  Search for similar programs that may provide inspiration \
+              for future work
+    status =  todo
+    note   =  This may actually be much more important than any other \
+              kind of work you might be doing.
+
+2022-02-11  # Friday, which is the day I like to focus on reading rather
+            # than writing
+    13:00 start research
+    15:20 start docs
+    15:30 start research
+    17:00 stop      # Dinner break
+    19:00 start research
+    20:15 stop
+>>> args = select date,task,hours,minutes
+>>> code = 0
+>>> stdout >>>
+date,task,hours,minutes
+2022-02-10,docs,1.00,60
+2022-02-10,code,0.25,15
+2022-02-11,research,5.08,305
+2022-02-11,docs,0.17,10
+>>> stderr >>>
+-------------------------------8<-------------------------------
+>>> stdin >>>
+task docs   # Write documentation
+    desc = Create a human-readable description of the program's behaviour
+    status = todo
+task code   # Write code
+    desc = Create a computer-readable description of a certain program's \
+           behaviour
+    status = done
+
+2022-02-10  # Thursday, time to wrap up some half-baked stuff
+    13:00 start docs
+    14:00 start code
+    14:15 stop
+
+task research
+    desc   =  Search for similar programs that may provide inspiration \
+              for future work
+    status =  todo
+    note   =  This may actually be much more important than any other \
+              kind of work you might be doing.
+
+2022-02-11  # Friday, which is the day I like to focus on reading rather
+            # than writing
+    13:00 start research
+    15:20 start docs
+    15:30 start research
+    17:00 stop      # Dinner break
+    19:00 start research
+    20:15 stop
+>>> args = print '{task:<10} {hours}' 'Total      {hours}'
+>>> code = 0
+>>> stdout >>>
+docs       1.17
+code       0.25
+research   5.08
+Total      6.50
+>>> stderr >>>
+-------------------------------8<-------------------------------
