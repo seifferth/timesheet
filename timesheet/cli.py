@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
 import sys
-from common_types import *
-from parser import parse
-from printer import print_sum, print_custom, print_csv
-from misc import parser_error
+from .types import *
+from .parser import parse
+from .printer import print_sum, print_custom, print_csv
+from .misc import parser_error
 from getopt import gnu_getopt as getopt
 
 _cli_help = """
@@ -67,17 +67,17 @@ Standard Fields
         same start and stop times.
 """.lstrip()
 
-if __name__ == "__main__":
+def main() -> int:
     all_opts, rest = getopt(sys.argv[1:], "hf:", ["help", "file=",
                             "undefined="])
     short2long = { "-h": "--help", "-f": "--file" }
     opts = { short2long.get(k, k).lstrip('-'): v for k, v in all_opts }
     if "help" in opts:
         print(_cli_help)
-        exit(0)
+        return 0
     if len(rest) < 1:
         print("No COMMAND specified for timesheet", file=sys.stderr)
-        exit(1)
+        return 1
     if "file" in opts:
         opts["file"] = [ v for k, v in all_opts if k in ["-f", "--file"] ]
     else:
@@ -86,14 +86,14 @@ if __name__ == "__main__":
     if command in ["sum", "fields"] and args:
         print(f"Command '{command}' takes no further arguments",
               file=sys.stderr)
-        exit(1)
+        return 1
     elif command in ["select", "print"] and not args:
         print("At least one further argument is required with the "
              f"'{command}' command", file=sys.stderr)
-        exit(1)
+        return 1
     elif command not in ["sum", "fields", "select", "print"]:
         print(f"Unknown command '{command}'", file=sys.stderr)
-        exit(1)
+        return 1
     sheets: list[Sheet] = list()
     for filename in opts['file']:
         try:
@@ -104,7 +104,7 @@ if __name__ == "__main__":
                     sheets.append(parse(f.read()))
         except ParseError as e:
             parser_error(e.line, e.msg, context=e.context)
-            exit(1)
+            return 1
     if command == "sum":
         print(print_sum(sheets), end="")
     elif command == "select":
@@ -121,4 +121,4 @@ if __name__ == "__main__":
             print('\n'.join(sheet.get_fields()))
     else:
         print(f"Unknown command '{command}'", file=sys.stderr)
-        exit(1)
+        return 1

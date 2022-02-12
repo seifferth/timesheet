@@ -2,7 +2,7 @@
 
 import re
 from decimal import Decimal
-from misc import parser_warning
+from .misc import parser_warning
 
 class ParseError(Exception):
     def __init__(self, line: int, msg: str, context=None):

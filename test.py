@@ -28,8 +28,8 @@ class TestFailure:
         return self.msg
 
 def run_test(test: Test) -> TestFailure:
-    p = run(f'timesheet/cli.py {test.args}', shell=True, input=test.stdin,
-            encoding="UTF-8", capture_output=True)
+    p = run(f'python3 -m timesheet {test.args}', shell=True,
+            input=test.stdin, encoding="UTF-8", capture_output=True)
     errmsg = list()
     if test.code != None and p.returncode != test.code:
         errmsg.append("=== Unexpected returncode ===")

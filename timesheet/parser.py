@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import re, sys
-from common_types import *
+from .types import *
 
 def parse_day(lno_offset: int, date: str, lines: list[str], sheet: Sheet) \
             -> None:
