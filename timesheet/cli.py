@@ -3,7 +3,7 @@
 import sys
 from .types import *
 from .parser import parse
-from .printer import print_sum, print_custom, print_csv
+from .printer import print_sum, print_custom, print_csv, get_fields
 from .misc import parser_error
 from getopt import gnu_getopt as getopt
 
@@ -130,8 +130,7 @@ def main() -> int:
             print(print_custom(sheets, fstring, undefined=undefined),
                   end="")
     elif command == "fields":
-        for sheet in sheets:
-            print('\n'.join(sheet.get_fields()))
+        print('\n'.join(get_fields(sheets)))
     else:
         print(f"Unknown command '{command}'", file=sys.stderr)
         return 1

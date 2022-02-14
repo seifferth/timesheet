@@ -101,20 +101,3 @@ class Sheet:
         self.tasks[task.name] = task
     def add_entry(self, entry: Entry) -> None:
         self.entries.append(entry)
-    def get_fields(self) -> list[str]:
-        attrs = [ "date", "year", "month", "day", "task", DescPlaceholder,
-                  "hours", "minutes", "start", "stop" ]
-        for k in self.defaults.keys():
-            if k not in attrs: attrs.append(k)
-        for t in self.tasks.values():
-            for k in t.attrs.keys():
-                if k not in attrs: attrs.append(k)
-        for e in self.entries:
-            for k in e.attrs.keys():
-                if k not in attrs: attrs.append(k)
-        if "desc" in attrs:
-            attrs.remove("desc")
-            attrs[attrs.index(DescPlaceholder)] = "desc"
-        else:
-            attrs.remove(DescPlaceholder)
-        return attrs

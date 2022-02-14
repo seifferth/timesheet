@@ -38,6 +38,25 @@ def select(sheets: list[Sheet], fields: list[str],
         result.append(linedict)
     return result
 
+def get_fields(sheets: list[Sheet]) -> list[str]:
+    attrs = [ "date", "year", "month", "day", "task", DescPlaceholder,
+              "hours", "minutes", "start", "stop" ]
+    for sheet in sheets:
+        for k in sheet.defaults.keys():
+            if k not in attrs: attrs.append(k)
+        for t in sheet.tasks.values():
+            for k in t.attrs.keys():
+                if k not in attrs: attrs.append(k)
+        for e in sheet.entries:
+            for k in e.attrs.keys():
+                if k not in attrs: attrs.append(k)
+    if "desc" in attrs:
+        attrs.remove("desc")
+        attrs[attrs.index(DescPlaceholder)] = "desc"
+    else:
+        attrs.remove(DescPlaceholder)
+    return attrs
+
 def dot_total(total: str) -> str:
     return total[:total.find("  ")+1] + \
            len(total[total.find("  ")+1:total.rfind("  ")+1]) * '.' + \
