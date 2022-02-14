@@ -42,9 +42,9 @@ Common Options
         references and default attributes. The resulting data will be
         aggregated across all files, however.
     --undefined STRING
-        Use the specified STRING for fields that do not have a
-        defined value. Default: 'undefined' with the print command
-        or the empty string with select.
+        Use the specified STRING for fields that do not have a defined
+        value. Default: 'undefined' with the print command or the empty
+        string with select.
     -i, --implicit-tasks
         Usually, tasks need to be defined explicitly before they can
         be referenced in time entries. While this is useful to guard
