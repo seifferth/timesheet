@@ -3,8 +3,8 @@
 import re, sys
 from .types import *
 
-def parse_day(lno_offset: int, date: str, lines: list[str], sheet: Sheet) \
-            -> None:
+def parse_day(lno_offset: int, date: str, lines: list[str], sheet: Sheet,
+              implicit_tasks=False) -> None:
     last_start: Time = None
     start: EntryStartPoint = None
     for lno, l in enumerate(lines):
@@ -41,9 +41,12 @@ def parse_day(lno_offset: int, date: str, lines: list[str], sheet: Sheet) \
                 task, *l = l.split(maxsplit=1)
                 l = None if len(l) == 0 else l[0]
                 if task not in sheet.tasks.keys():
-                    raise ParseError(lno_offset+lno,
-                        f'Task {task} referenced before assignment'
-                    )
+                    if implicit_tasks:
+                        sheet.add_task(Task(lno_offset+lno+1, task))
+                    else:
+                        raise ParseError(lno_offset+lno,
+                            f'Task {task} referenced before assignment'
+                        )
                 try:
                     start = EntryStartPoint(lno_offset+lno, task, date, time)
                 except ParseError as e:
@@ -94,7 +97,7 @@ def starts_blank(line: str) -> bool:
     if not line.strip(): return True
     return bool(re.match(r'^\s', line))
 
-def parse(sheet: str) -> Sheet:
+def parse(sheet: str, implicit_tasks=False) -> Sheet:
     res = Sheet()
     lines: list[str] = strip_comments(sheet).splitlines()
     i: int = 0
@@ -126,7 +129,8 @@ def parse(sheet: str) -> Sheet:
             elif re.match(r'^[0-9]', entry_type):
                 if not re.match(r'^[0-9]{4}-[0-9]{2}-[0-9]{2}$', entry_type):
                     raise ParseError(i-1, f"Cannot parse date '{entry_type}'")
-                parse_day(i, date=entry_type, lines=ls, sheet=res)
+                parse_day(i, date=entry_type, lines=ls, sheet=res,
+                          implicit_tasks=implicit_tasks)
             else:
                 raise ParseError(i-1, f"Unknown entry type '{entry_type}'")
             i=j; continue

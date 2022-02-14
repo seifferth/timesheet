@@ -40,6 +40,16 @@ Common Options
         Use the specified STRING for fields that do not have a
         defined value. Default: 'undefined' with the print command
         or the empty string with select.
+    -i, --implicit-tasks
+        Usually, tasks need to be defined explicitly before they can
+        be referenced in time entries. While this is useful to guard
+        against typos in task references, sometimes it may be useful
+        to parse incomplete timesheets that are still missing some task
+        definitions. If --implicit-tasks is set, the first reference to
+        an undefined task will be treated as an implicit definition of
+        said task, thus allowing to parse timesheets that are missing
+        some or all task definitions. Implicitly defined tasks can not
+        have any attributes.
     -h, --help
         Print this help message and exit.
 
@@ -68,9 +78,9 @@ Standard Fields
 """.lstrip()
 
 def main() -> int:
-    all_opts, rest = getopt(sys.argv[1:], "hf:", ["help", "file=",
-                            "undefined="])
-    short2long = { "-h": "--help", "-f": "--file" }
+    all_opts, rest = getopt(sys.argv[1:], "hf:i", ["help", "file=",
+                            "undefined=", "implicit-tasks"])
+    short2long = { "-h": "--help", "-f": "--file", "-i": "--implicit-tasks" }
     opts = { short2long.get(k, k).lstrip('-'): v for k, v in all_opts }
     if "help" in opts:
         print(_cli_help)
@@ -95,13 +105,16 @@ def main() -> int:
         print(f"Unknown command '{command}'", file=sys.stderr)
         return 1
     sheets: list[Sheet] = list()
+    implicit_tasks = True if "implicit-tasks" in opts else False
     for filename in opts['file']:
         try:
             if filename == "-":
-                sheets.append(parse(sys.stdin.read()))
+                sheets.append(parse(sys.stdin.read(),
+                                    implicit_tasks=implicit_tasks))
             else:
                 with open(filename) as f:
-                    sheets.append(parse(f.read()))
+                    sheets.append(parse(f.read(),
+                                        implicit_tasks=implicit_tasks))
         except ParseError as e:
             parser_error(e.line, e.msg, context=e.context)
             return 1

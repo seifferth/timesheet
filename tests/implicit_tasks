@@ -1,0 +1,96 @@
+>>> stdin >>>
+task docs
+    desc = Write documentation
+
+2022-02-10
+    13:00 start docs
+    14:00 start code
+    14:15 stop
+>>> args = select hours
+>>> code = 1
+>>> stdout >>>
+>>> stderr >>>
+Error while parsing line 6: Task code referenced before assignment
+  | 2022-02-10
+  |     13:00 start docs
+  >     14:00 start code
+  |     14:15 stop
+-----------------------------------8<-----------------------------------
+>>> stdin >>>
+task docs
+    desc = Write documentation
+
+2022-02-10
+    13:00 start docs
+    14:00 start code
+    14:15 stop
+>>> args = --implicit-tasks select hours
+>>> code = 0
+>>> stdout >>>
+hours
+1.25
+>>> stderr >>>
+-----------------------------------8<-----------------------------------
+>>> stdin >>>
+task docs
+    desc = Write documentation
+
+2022-02-10
+    13:00 start docs
+    14:00 start code
+    14:15 stop
+task code
+    desc = Write code
+>>> args = --implicit-tasks select hours
+>>> code = 1
+>>> stdout >>>
+>>> stderr >>>
+Error while parsing line 8: Task 'code' was already defined with different
+attributes on line 6
+  |     14:00 start code
+  |     14:15 stop
+  > task code
+  |     desc = Write code
+-----------------------------------8<-----------------------------------
+>>> stdin >>>
+task docs
+    desc = Write documentation
+
+    # This comment should not affect anything
+2022-02-10
+            # Here's another comment
+    13:00 start code
+    14:00 start docs
+    14:15 stop
+task code
+    desc = Write code
+>>> args = --implicit-tasks select hours
+>>> code = 1
+>>> stdout >>>
+>>> stderr >>>
+Error while parsing line 10: Task 'code' was already defined with different
+attributes on line 7
+  |     14:00 start docs
+  |     14:15 stop
+  > task code
+  |     desc = Write code
+-----------------------------------8<-----------------------------------
+>>> stdin >>>
+task docs
+    desc = Write documentation
+
+    # This comment should not affect anything
+2022-02-10
+            # Here's another comment
+    13:00 start code
+    14:00 start docs
+    14:15 stop
+task code
+>>> args = --implicit-tasks select hours
+>>> code = 0
+>>> stdout >>>
+hours
+1.25
+>>> comment = This works because both tasks have no attributes
+>>> stderr >>>
+-----------------------------------8<-----------------------------------
