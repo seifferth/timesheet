@@ -5,7 +5,6 @@ from .types import *
 
 def parse_day(lno_offset: int, date: str, lines: list[str], sheet: Sheet,
               implicit_tasks=False) -> None:
-    last_start: Time = None
     start: EntryStartPoint = None
     for lno, l in enumerate(lines):
         if re.match(r'^[^0-9\s]', l):       # Attribute line
@@ -24,18 +23,16 @@ def parse_day(lno_offset: int, date: str, lines: list[str], sheet: Sheet,
             time = Time(lno_offset+lno, time)
             l = None if len(l) == 0 else l[0]
             if entry_type == "stop":
-                if last_start == None: raise ParseError(lno_offset+lno,
+                if start == None: raise ParseError(lno_offset+lno,
                     "Cannot stop time entry without starting it first"
                 )
                 sheet.add_entry(Entry(start, time))
-                last_start = None
                 start = None
             elif entry_type == "start" and l == None:
                 raise ParseError(lno_offset+lno,
                     "Cannot start time entry without specifying a task"
                 )
             elif entry_type == "start":
-                last_start = time
                 if start != None:
                     sheet.add_entry(Entry(start, time))
                 task, *l = l.split(maxsplit=1)
