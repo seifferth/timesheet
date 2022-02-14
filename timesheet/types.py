@@ -11,8 +11,7 @@ class ParseError(Exception):
         self.context: str = context
     def __str__(self):
         return self.msg
-class ValidationError(Exception):
-    pass
+
 class DescPlaceholder():
     pass
 
