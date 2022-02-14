@@ -35,7 +35,12 @@ Commands
 
 Common Options
     -f FILE, --file FILE
-        Read the timesheet data from FILE rather than from stdin.
+        Read the timesheet data from FILE rather than from stdin. This
+        option may be specified multiple times to parse data from more
+        than one file. If multiple files are specified, each file will
+        be parsed independently, which affects the resolution of task
+        references and default attributes. The resulting data will be
+        aggregated across all files, however.
     --undefined STRING
         Use the specified STRING for fields that do not have a
         defined value. Default: 'undefined' with the print command
