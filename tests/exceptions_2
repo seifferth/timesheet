@@ -334,7 +334,7 @@ task code
 >>> code = 1
 >>> stdout >>>
 >>> stderr >>>
-Error while parsing line 8: Task unknown referenced before assignment
+Error while parsing line 8: Task unknown referenced before definition
   |     desc = Write code
   | 2022-02-10
   >     13:00 start unknown
@@ -356,7 +356,7 @@ task code
 >>> code = 1
 >>> stdout >>>
 >>> stderr >>>
-Error while parsing line 8: Task unknown referenced before assignment
+Error while parsing line 8: Task unknown referenced before definition
   | 
   | 2022-02-10
   >     13:00 start unknown

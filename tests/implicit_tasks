@@ -10,7 +10,7 @@ task docs
 >>> code = 1
 >>> stdout >>>
 >>> stderr >>>
-Error while parsing line 6: Task code referenced before assignment
+Error while parsing line 6: Task code referenced before definition
   | 2022-02-10
   |     13:00 start docs
   >     14:00 start code

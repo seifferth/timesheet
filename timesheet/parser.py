@@ -42,7 +42,7 @@ def parse_day(lno_offset: int, date: str, lines: list[str], sheet: Sheet,
                         sheet.add_task(Task(lno_offset+lno+1, task))
                     else:
                         raise ParseError(lno_offset+lno,
-                            f'Task {task} referenced before assignment'
+                            f'Task {task} referenced before definition'
                         )
                 try:
                     start = EntryStartPoint(lno_offset+lno, task, date, time)
