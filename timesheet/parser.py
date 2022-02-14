@@ -7,7 +7,7 @@ def parse_day(lno_offset: int, date: str, lines: list[str], sheet: Sheet,
               implicit_tasks=False) -> None:
     start: EntryStartPoint = None
     for lno, l in enumerate(lines):
-        if re.match(r'^[^0-9\s]', l):       # Attribute line
+        if re.match(r'^[^0-9]', l):         # Attribute line
             if not "=" in l:
                 raise ParseError(lno_offset+lno,
                     "Expected time entry attribute of form "
