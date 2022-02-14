@@ -4,7 +4,7 @@ import re, sys
 from .types import *
 
 def parse_day(lno_offset: int, date: str, lines: list[str], sheet: Sheet,
-              implicit_tasks=False) -> None:
+              implicit_tasks=False, filename: str=None) -> None:
     start: EntryStartPoint = None
     for lno, l in enumerate(lines):
         if re.match(r'^[^0-9]', l):         # Attribute line
@@ -45,7 +45,8 @@ def parse_day(lno_offset: int, date: str, lines: list[str], sheet: Sheet,
                             f'Task {task} referenced before definition'
                         )
                 try:
-                    start = EntryStartPoint(lno_offset+lno, task, date, time)
+                    start = EntryStartPoint(filename, lno_offset+lno,
+                                            task, date, time)
                 except ParseError as e:
                     raise ParseError(lno_offset+lno, e.msg)
                 if l:
@@ -96,7 +97,7 @@ def starts_blank(line: str) -> bool:
     if not line.strip(): return True
     return bool(re.match(r'^\s', line))
 
-def parse(sheet: str, implicit_tasks=False) -> Sheet:
+def parse(sheet: str, implicit_tasks=False, filename: str=None) -> Sheet:
     res = Sheet()
     lines: list[str] = strip_comments(sheet).splitlines()
     i: int = 0
@@ -129,7 +130,7 @@ def parse(sheet: str, implicit_tasks=False) -> Sheet:
                 if not re.match(r'^[0-9]{4}-[0-9]{2}-[0-9]{2}$', entry_type):
                     raise ParseError(i-1, f"Cannot parse date '{entry_type}'")
                 parse_day(i, date=entry_type, lines=ls, sheet=res,
-                          implicit_tasks=implicit_tasks)
+                          implicit_tasks=implicit_tasks, filename=filename)
             else:
                 raise ParseError(i-1, f"Unknown entry type '{entry_type}'")
             i=j; continue
@@ -144,4 +145,5 @@ def parse(sheet: str, implicit_tasks=False) -> Sheet:
         context = (('\n'.join(pre)+'\n') if pre else "") + \
                   f'  > {lines[lno]}\n' + \
                   (('\n'.join(post)+'\n') if post else "")
-        raise ParseError(lno, e.msg, context=context) from e
+        raise ParseError(lno, e.msg, context=context,
+                         filename=filename) from e

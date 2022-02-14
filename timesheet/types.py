@@ -5,10 +5,12 @@ from decimal import Decimal
 from .misc import parser_warning
 
 class ParseError(Exception):
-    def __init__(self, line: int, msg: str, context=None):
+    def __init__(self, line: int, msg: str, context=None,
+                 filename: str=None):
         self.line: int = line
         self.msg: str = msg
         self.context: str = context
+        self.filename = filename
     def __str__(self):
         return self.msg
 
@@ -42,7 +44,9 @@ class Time:
         return self.__value
 
 class EntryStartPoint:
-    def __init__(self, lno: int, task: str, date: str, start: Time):
+    def __init__(self, filename: str, lno: int, task: str, date: str,
+                 start: Time):
+        self.filename: str = filename
         self.lno: int = lno
         self.task: str = task
         self.start: Time = start
@@ -62,11 +66,11 @@ class Entry:
         self.stop: Time = stop
         self.minutes: Decimal = self.stop.decimal() - self.start.decimal()
         if self.minutes == 0:
-            parser_warning(self.lno+1,
+            parser_warning(start.filename, self.lno+1,
                 f"The time entry for task {self.task} is zero"
             )
         elif self.minutes < 0:
-            parser_warning(self.lno+1,
+            parser_warning(start.filename, self.lno+1,
                 f"The time entry for task {self.task} is negative: "\
                 f"{self.minutes/60:.2f} hours"
             )

@@ -107,16 +107,19 @@ def main() -> int:
     sheets: list[Sheet] = list()
     implicit_tasks = True if "implicit-tasks" in opts else False
     for filename in opts['file']:
+        parser_filename = None if len(opts['file']) == 1 else filename
         try:
             if filename == "-":
                 sheets.append(parse(sys.stdin.read(),
-                                    implicit_tasks=implicit_tasks))
+                                    implicit_tasks=implicit_tasks,
+                                    filename=parser_filename))
             else:
                 with open(filename) as f:
                     sheets.append(parse(f.read(),
-                                        implicit_tasks=implicit_tasks))
+                                        implicit_tasks=implicit_tasks,
+                                        filename=parser_filename))
         except ParseError as e:
-            parser_error(e.line, e.msg, context=e.context)
+            parser_error(e.filename, e.line, e.msg, context=e.context)
             return 1
     if command == "sum":
         print(print_sum(sheets), end="")
