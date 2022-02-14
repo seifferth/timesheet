@@ -4,6 +4,40 @@ import re, csv
 from io import StringIO
 from .types import *
 
+def select(sheets: list[Sheet], fields: list[str],
+           undefined="undefined") -> list[dict]:
+    lines: dict[tuple[str,Decimal]] = dict()
+    keyfields = sorted([ f for f in fields
+                         if f not in ['hours', 'minutes'] ])
+    for sheet in sheets:
+        for entry in sheet.entries:
+            linedict = dict()
+            task = sheet.tasks.get(entry.task)
+            for f in keyfields:
+                if f == "task":      linedict["task"]  = entry.task
+                elif f == "date":    linedict["date"]  = entry.date
+                elif f == "day":     linedict["day"]   = entry.day
+                elif f == "month":   linedict["month"] = entry.month
+                elif f == "year":    linedict["year"]  = entry.year
+                elif f == "start":   linedict["start"] = entry.start.string
+                elif f == "stop":    linedict["stop"]  = entry.stop.string
+                elif f in entry.attrs.keys():
+                    linedict[f] = entry.attrs.get(f)
+                elif f in task.attrs.keys():
+                    linedict[f] = task.attrs.get(f)
+                elif f in sheet.defaults.keys():
+                    linedict[f] = sheet.defaults.get(f)
+                else:                   linedict[f] = undefined
+            key = str([ (f, linedict[f]) for f in keyfields ])
+            if key not in lines.keys(): lines[key] = (linedict, Decimal(0))
+            lines[key] = (lines[key][0], lines[key][1] + entry.minutes)
+    result = list()
+    for linedict, minutes in lines.values():
+        linedict["minutes"] = minutes
+        linedict["hours"] = minutes/60
+        result.append(linedict)
+    return result
+
 def dot_total(total: str) -> str:
     return total[:total.find("  ")+1] + \
            len(total[total.find("  ")+1:total.rfind("  ")+1]) * '.' + \
@@ -13,13 +47,12 @@ def print_sum(sheets: list[Sheet]) -> str:
     lines = list()
     grand_total = Decimal(0)
     daily_rows: dict[str,list] = dict()
-    for sheet  in sheets:
-        for row in sheet.select(["date", "task", "desc", "hours"],
-                                undefined=""):
-            if row["date"] not in daily_rows.keys():
-                daily_rows[row["date"]] = list()
-            daily_rows[row["date"]].append({ k: v for k, v in row.items()
-                                                  if k != "date" })
+    for row in select(sheets, ["date", "task", "desc", "hours"],
+                      undefined=""):
+        if row["date"] not in daily_rows.keys():
+            daily_rows[row["date"]] = list()
+        daily_rows[row["date"]].append({ k: v for k, v in row.items()
+                                              if k != "date" })
     for date in sorted(daily_rows.keys()):
         daily_total = Decimal(0)
         lines.append(date)
@@ -44,9 +77,8 @@ def print_custom(sheets: list[Sheet], format: str,
     lines = list()
     format = format.replace("{hours}", "{hours:.2f}") # Set default format
     fields = set(re.findall(r'{([^}:]*)[}:]', format))
-    for sheet in sheets:
-        for linedict in sheet.select(fields, undefined=undefined):
-            lines.append(format.format(**linedict))
+    for linedict in select(sheets, fields, undefined=undefined):
+        lines.append(format.format(**linedict))
     return '\n'.join(lines)+'\n'
 
 def print_csv(sheets: list[Sheet], fields: list[str],
@@ -62,8 +94,7 @@ def print_csv(sheets: list[Sheet], fields: list[str],
             fields[i:i+1] = available_fields
     w = csv.writer(result, lineterminator="\n")
     w.writerow(fields)
-    for sheet in sheets:
-        for row in sheet.select(fields, undefined=undefined):
-            if "hours" in row.keys(): row["hours"] = f'{row["hours"]:.2f}'
-            w.writerow([ row[f] for f in fields ])
+    for row in select(sheets, fields, undefined=undefined):
+        if "hours" in row.keys(): row["hours"] = f'{row["hours"]:.2f}'
+        w.writerow([ row[f] for f in fields ])
     result.seek(0); return result.read()

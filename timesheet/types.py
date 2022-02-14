@@ -118,34 +118,3 @@ class Sheet:
         else:
             attrs.remove(DescPlaceholder)
         return attrs
-    def select(self, fields: list[str], undefined="undefined") -> list[dict]:
-        lines: dict[tuple[str,Decimal]] = dict()
-        keyfields = sorted([ f for f in fields
-                             if f not in ['hours', 'minutes'] ])
-        for entry in self.entries:
-            linedict = dict()
-            task = self.tasks.get(entry.task)
-            for f in keyfields:
-                if f == "task":      linedict["task"]  = entry.task
-                elif f == "date":    linedict["date"]  = entry.date
-                elif f == "day":     linedict["day"]   = entry.day
-                elif f == "month":   linedict["month"] = entry.month
-                elif f == "year":    linedict["year"]  = entry.year
-                elif f == "start":   linedict["start"] = entry.start.string
-                elif f == "stop":    linedict["stop"]  = entry.stop.string
-                elif f in entry.attrs.keys():
-                    linedict[f] = entry.attrs.get(f)
-                elif f in task.attrs.keys():
-                    linedict[f] = task.attrs.get(f)
-                elif f in self.defaults.keys():
-                    linedict[f] = self.defaults.get(f)
-                else:                   linedict[f] = undefined
-            key = str([ (f, linedict[f]) for f in keyfields ])
-            if key not in lines.keys(): lines[key] = (linedict, Decimal(0))
-            lines[key] = (lines[key][0], lines[key][1] + entry.minutes)
-        result = list()
-        for linedict, minutes in lines.values():
-            linedict["minutes"] = minutes
-            linedict["hours"] = minutes/60
-            result.append(linedict)
-        return result
