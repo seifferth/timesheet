@@ -57,7 +57,6 @@ class EntryStartPoint:
         self.year, self.month, self.day = date.split("-")
 class Entry:
     def __init__(self, start: EntryStartPoint, stop: Time):
-        self.lno: int = start.lno
         self.task: str = start.task
         self.start: Time = start.start
         self.attrs: dict[str,str] = start.attrs
@@ -66,11 +65,11 @@ class Entry:
         self.stop: Time = stop
         self.minutes: Decimal = self.stop.decimal() - self.start.decimal()
         if self.minutes == 0:
-            parser_warning(start.filename, self.lno+1,
+            parser_warning(start.filename, start.lno+1,
                 f"The time entry for task {self.task} is zero"
             )
         elif self.minutes < 0:
-            parser_warning(start.filename, self.lno+1,
+            parser_warning(start.filename, start.lno+1,
                 f"The time entry for task {self.task} is negative: "\
                 f"{self.minutes/60:.2f} hours"
             )
