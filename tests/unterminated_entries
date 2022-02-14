@@ -1,0 +1,86 @@
+>>> stdin >>>
+task code desc = Write code
+task docs desc = Write documentation
+
+2022-02-11
+    13:00 start code
+    14:00 start docs
+>>> code = 1
+>>> args = select hours
+>>> stdout >>>
+>>> stderr >>>
+Error while parsing line 6: Missing stop time
+  | 2022-02-11
+  |     13:00 start code
+  >     14:00 start docs
+-----------------------------------8<-----------------------------------
+>>> stdin >>>
+task code desc = Write code
+task docs desc = Write documentation
+
+2022-02-11
+    13:00 start code
+    14:00 start docs
+                    desc = Some description override
+                    status = todo
+>>> code = 1
+>>> args = select hours
+>>> stdout >>>
+>>> stderr >>>
+Error while parsing line 6: Missing stop time
+  | 2022-02-11
+  |     13:00 start code
+  >     14:00 start docs
+  |                     desc = Some description override
+  |                     status = todo
+-----------------------------------8<-----------------------------------
+>>> stdin >>>
+task code desc = Write code
+task docs desc = Write documentation
+
+    # Comment
+
+2022-02-11
+    13:00 start code
+    14:00 start docs desc = Some description override
+                     status = todo
+
+2022-02-12
+    14:00 start docs
+    15:00 stop
+>>> code = 1
+>>> args = select hours
+>>> stdout >>>
+>>> stderr >>>
+Error while parsing line 8: Missing stop time
+  | 2022-02-11
+  |     13:00 start code
+  >     14:00 start docs desc = Some description override
+  |                      status = todo
+  | 
+  | 2022-02-12
+-----------------------------------8<-----------------------------------
+>>> stdin >>>
+task code desc = Write code
+task docs desc = Write documentation
+
+    # Comment
+
+2022-02-11
+    13:00 start code
+    14:00 start docs desc = Some description override
+                     status = todo
+    # Another comment
+    # How about that
+>>> code = 1
+>>> args = select hours
+>>> stdout >>>
+>>> stderr >>>
+Error while parsing line 8: Missing stop time
+  | 2022-02-11
+  |     13:00 start code
+  >     14:00 start docs desc = Some description override
+  |                      status = todo
+  |     # Another comment
+  |     # How about that
+-----------------------------------8<-----------------------------------

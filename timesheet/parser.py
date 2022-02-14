@@ -63,6 +63,8 @@ def parse_day(lno_offset: int, date: str, lines: list[str], sheet: Sheet,
                 raise ParseError(lno_offset+lno,
                     f"Unknown time entry type '{entry_type}'"
                 )
+    if start != None:
+        raise ParseError(start.lno, "Missing stop time")
 
 def parse_task(lno: int, lines: list[str], sheet: Sheet) -> None:
     name, *l = lines[0].split(maxsplit=1)
