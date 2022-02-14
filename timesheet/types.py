@@ -63,13 +63,13 @@ class Entry:
         self.stop: Time = stop
         self.minutes: Decimal = self.stop.decimal() - self.start.decimal()
         if self.minutes == 0:
-            parser_warning(self.lno,
-                f"The time entry for task '{self.task}' is zero"
+            parser_warning(self.lno+1,
+                f"The time entry for task {self.task} is zero"
             )
         elif self.minutes < 0:
-            parser_warning(self.lno,
-                f"The time entry for task '{self.task}' is negative: "\
-                f"'{self.time/60:.2f}' hours"
+            parser_warning(self.lno+1,
+                f"The time entry for task {self.task} is negative: "\
+                f"{self.minutes/60:.2f} hours"
             )
 
 class Sheet:

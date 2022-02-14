@@ -1,0 +1,51 @@
+>>> stdin >>>
+task code desc = Write code
+task docs desc = Write documentation
+
+2021-02-11
+    13:00 start code
+    12:00 start docs
+    14:00 stop
+>>> code = 0
+>>> args = select hours
+>>> stdout >>>
+hours
+1.00
+>>> stderr >>>
+Warning while parsing line 5: The time entry for task code is negative: -1.00
+hours
+-----------------------------------8<-----------------------------------
+>>> stdin >>>
+task code desc = Write code
+task docs desc = Write documentation
+
+2021-02-11
+    13:00 start code
+    13:00 start docs
+    14:00 stop
+>>> code = 0
+>>> args = select hours
+>>> stdout >>>
+hours
+1.00
+>>> stderr >>>
+Warning while parsing line 5: The time entry for task code is zero
+-----------------------------------8<-----------------------------------
+>>> stdin >>>
+task code
+    desc = Write code
+    # Comment
+task docs desc = Write documentation
+
+2021-02-11
+    13:00 start code
+    13:00 start docs
+    14:00 stop
+>>> code = 0
+>>> args = select hours
+>>> stdout >>>
+hours
+1.00
+>>> stderr >>>
+Warning while parsing line 7: The time entry for task code is zero
+-----------------------------------8<-----------------------------------
