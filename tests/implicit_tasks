@@ -45,8 +45,8 @@ task code
 >>> code = 1
 >>> stdout >>>
 >>> stderr >>>
-Error while parsing line 8: Task 'code' was already defined with different
-attributes on line 6
+Error while parsing line 8: Task 'code' was already defined without attributes
+on line 6
   |     14:00 start code
   |     14:15 stop
   > task code
@@ -68,8 +68,8 @@ task code
 >>> code = 1
 >>> stdout >>>
 >>> stderr >>>
-Error while parsing line 10: Task 'code' was already defined with different
-attributes on line 7
+Error while parsing line 10: Task 'code' was already defined without attributes
+on line 7
   |     14:00 start docs
   |     14:15 stop
   > task code
