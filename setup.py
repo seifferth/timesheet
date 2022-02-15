@@ -5,7 +5,7 @@ with open('readme.md', 'r', encoding='utf-8') as f:
 
 setup(
     name='timesheet',
-    version='1.0.0-dev',
+    version='1.0.1',
     packages=['timesheet'],
     entry_points={'console_scripts': [
         'timesheet = timesheet.cli:main'
