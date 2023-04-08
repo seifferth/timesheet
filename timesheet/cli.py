@@ -13,8 +13,8 @@ Usage: timesheet [OPTION]... COMMAND [ARG]...
 Commands
     sum         Print a summary of per-task totals for each day
                 in the timesheet.
-    select      Print a csv-list containing selected fields. The
-                fields can be specified as command arguments and
+    select      Print a csv-formatted list containing selected fields.
+                The fields can be specified as command arguments and
                 must be separated by commas. Whitespace around the
                 commas is optional. E. g. 'select date, task, hours'.
                 The wildcard '*' may be used to select all fields
@@ -25,7 +25,7 @@ Commands
                 {hours:.2f} hours on {task}"'. Each format string
                 must be passed as a single command argument. If more
                 than one format string are provided, they will be
-                applied in order of specification. This may be handy
+                processed in order of specification. This may be handy
                 if one wants to add a sum row showing some sort of
                 total, for instance.
     fields      Print a list of fields that are available to the
